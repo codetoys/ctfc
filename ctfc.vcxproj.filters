@@ -1,0 +1,202 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="lib\readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="platform\_copysrc.sh" />
+    <None Include="platform\_foreach.sh" />
+    <None Include="platform\_make_dir_list.sh" />
+    <None Include="platform\_makecpp.sh" />
+    <None Include="platform\config.mk" />
+    <None Include="platform\debug.mk" />
+    <None Include="platform\fast.mk" />
+    <None Include="platform\linux.mk" />
+    <None Include="platform\makefile.mk" />
+    <None Include="src\makeall.sh" />
+    <None Include="src\env\makefile.mk" />
+    <None Include="src\env\rebuild.sh" />
+    <None Include="src\env\run.sh" />
+    <None Include="src\httpd\wwwroot\css\css.css" />
+    <None Include="src\httpd\wwwroot\login\login.htm" />
+    <None Include="src\httpd\wwwroot\index.html" />
+    <None Include="src\httpd\makefile.mk" />
+    <None Include="src\httpd\rebuild.sh" />
+    <None Include="src\httpd\run.sh" />
+    <None Include="make.sh" />
+    <None Include="src\httpd\wwwroot\page\developing.htm" />
+    <None Include="src\httpd\wwwroot\page\function_menu.htm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\env\CommandSet.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\env\env.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\env\myLog.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\env\myUtil.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\Archive.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\BitSet.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\Buffer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\CharSetConv.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\ColumnData.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\config.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\CSV.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\FastFileIndex.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\function.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\htmldoc.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\IDataSource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\JSTemplate.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\meta.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\mimetype.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\mydir.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\myexception.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\mymutex.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\mymutex1.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\mymutex2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\mymutex3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\myNestedTable.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\myprocess.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\myProcPseudo.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\myshm.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\mysocket.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\myZIP.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\sstring.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\std_error_code.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\httpd\mycgi.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\httpd\myhttpbase.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\httpd\myhttpclient.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\httpd\myhttpd.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\httpd\myhttpserver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\httpd\myhttpserver_admin_page.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\httpd\myhttpserver_struct.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\httpd\myhttpshell.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\httpd\mysocketserver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\httpd\myThread.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\httpd\myUserManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\env\env_t.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\env\myLog.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\env\myUtil.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\httpd\myhttpd.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\httpd\myhttpd_t.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\httpd\myhttpserver_admin_page.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\httpd\myThread.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="src\httpd\wwwroot\page\mb_menu.xml" />
+    <Xml Include="src\httpd\wwwroot\page\mb_menu_item.xml" />
+  </ItemGroup>
+</Project>

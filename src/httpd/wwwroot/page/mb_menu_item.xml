@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<___xml_root___>
+	<___xml_record___>
+		<MENU_ID>0</MENU_ID>
+		<NAME>无效的</NAME>
+		<HREF>/page/developing.htm</HREF>
+	</___xml_record___>
+  <___xml_record___>
+    <MENU_ID>1</MENU_ID>
+    <NAME>系统</NAME>
+    <HREF>/page/developing.htm</HREF>
+  </___xml_record___>
+  <___xml_record___>
+    <MENU_ID>101</MENU_ID>
+    <NAME>内置功能</NAME>
+    <HREF>/default.asp</HREF>
+  </___xml_record___>
+  <___xml_record___>
+    <MENU_ID>102</MENU_ID>
+    <NAME>env</NAME>
+    <HREF>/shell.asp?command=env</HREF>
+  </___xml_record___>
+  <___xml_record___>
+    <MENU_ID>103</MENU_ID>
+    <NAME>ps</NAME>
+    <HREF>/shell.asp?command=ps%20-ef</HREF>
+  </___xml_record___>
+  <___xml_record___>
+    <MENU_ID>104</MENU_ID>
+    <NAME>df</NAME>
+    <HREF>/shell.asp?command=df</HREF>
+  </___xml_record___>
+  <___xml_record___>
+    <MENU_ID>2</MENU_ID>
+    <NAME>数据中心</NAME>
+    <HREF>/page/developing.htm</HREF>
+  </___xml_record___>
+  <___xml_record___>
+    <MENU_ID>201</MENU_ID>
+    <NAME>cmd.exe</NAME>
+    <HREF>/shell.asp?command=../bin/cmd.exe</HREF>
+  </___xml_record___>
+
+</___xml_root___>
