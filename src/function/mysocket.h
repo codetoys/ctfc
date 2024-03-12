@@ -13,6 +13,7 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <errno.h>
+#include <netinet/tcp.h>
 #else
 #include "winsock.h"
 #endif
@@ -187,9 +188,13 @@ namespace ns_my_std
 				s = -1;
 				return true;
 			}
-			else return false;
+			else
+			{
+				s = -1;
+				return false;
+			}
 		}
-		bool Connect(const string & host, unsigned short port)//连接到指定的目标
+		bool Connect(const string& host, unsigned short port, int _syncnt = 0)//连接到指定的目标
 		{
 			if (isSTDOUT)return false;
 			struct hostent *ph;
@@ -212,6 +217,8 @@ namespace ns_my_std
 				if (NULL == (ph = gethostbyname(host.c_str())))return false;
 				memcpy(&peersa.sin_addr.s_addr, ph->h_addr_list[0], ph->h_length);
 			}
+			int syncnt = _syncnt;
+			setsockopt(s, IPPROTO_TCP, TCP_SYNCNT, &syncnt, sizeof(syncnt));//Linux下设置连接重传次数，0为默认，默认是6，需要1+2+4+8+16+32+64=127秒才能返回（实测大约130秒）
 			if (connect(s, (sockaddr*)(void*)&peersa, sizeof(struct sockaddr_in)) < 0)
 			{
 				Close();
@@ -226,11 +233,18 @@ namespace ns_my_std
 		bool IsConnected() { if (isSTDOUT)return true; else return -1 != s; }//是否处于连接状态，只对客户socket有意义
 		sockaddr_in const * GetPeersa()const { return &this->peersa; }
 		//检查套接字是否可读
-		bool IsSocketReadReady(long seconds, bool & ret)
+		bool IsSocketReadReady(long seconds, bool& ret)
 		{
 			struct timeval timeout;
 			timeout.tv_sec = seconds;
 			timeout.tv_usec = 0;
+			return IsSocketReadReady(timeout, ret);
+		}
+		bool IsSocketReadReady_ms(long ms, bool& ret)
+		{
+			struct timeval timeout;
+			timeout.tv_sec = ms / 1000 * 1000;
+			timeout.tv_usec = ms % 1000 * 1000;
 			return IsSocketReadReady(timeout, ret);
 		}
 		bool IsSocketReadReady(struct timeval & timeout, bool & ret)
