@@ -243,7 +243,7 @@ namespace ns_my_std
 		bool IsSocketReadReady_ms(long ms, bool& ret)
 		{
 			struct timeval timeout;
-			timeout.tv_sec = ms / 1000 * 1000;
+			timeout.tv_sec = ms / 1000;
 			timeout.tv_usec = ms % 1000 * 1000;
 			return IsSocketReadReady(timeout, ret);
 		}

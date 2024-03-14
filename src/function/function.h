@@ -740,8 +740,6 @@ namespace ns_my_std
 		//获取经过的微秒数
 		int64_t GetTimeSpanUS()const
 		{
-			if (0 == t.tv_sec && 0 == t.tv_usec)return -1;
-
 			timeval now;
 			gettimeofday(&now, NULL);
 			return ((int64_t)now.tv_sec - t.tv_sec) * 1000000 + ((int64_t)now.tv_usec - t.tv_usec);
@@ -749,13 +747,11 @@ namespace ns_my_std
 		//获取经过的毫秒数
 		int64_t GetTimeSpanMS()const
 		{
-			if (0 == t.tv_sec && 0 == t.tv_usec)return -1;
 			return GetTimeSpanUS() / 1000;
 		}
 		//获取经过的秒数
 		int64_t GetTimeSpanS()const
 		{
-			if (0 == t.tv_sec && 0 == t.tv_usec)return -1;
 			return GetTimeSpanMS() / 1000;
 		}
 	};

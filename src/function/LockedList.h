@@ -13,55 +13,61 @@
 using namespace ns_my_std;
 
 template<typename T>
-class LockedList :private list<T>
+class LockedList
 {
 private:
+	list<T> m_data;
 	mutex m_mutex;//互斥锁
 public:
-	using list<T>::iterator;
-	typename list<T>::iterator locked_begin()
+	bool locked_TryGetBegin(T& data)
 	{
+		bool ret;
 		m_mutex.lock();
-		typename list<T>::iterator it = this->begin();
+		typename list<T>::iterator it = m_data.begin();
+		if (it != m_data.end())
+		{
+			data = *it;
+			ret = true;
+		}
+		else
+		{
+			ret = false;
+		}
 		m_mutex.unlock();
-		return it;
+		return ret;
 	}
-	typename list<T>::iterator locked_end()
-	{
-		m_mutex.lock();
-		typename list<T>::iterator it = this->end();
-		m_mutex.unlock();
-		return it;
-	}
+	void lock() { return m_mutex.lock(); }
+	list<T>& getForForeach() { return m_data; }
+	void unlock() { return m_mutex.unlock(); }
 	size_t locked_size()
 	{
 		m_mutex.lock();
-		size_t ret = this->size();
+		size_t ret = m_data.size();
 		m_mutex.unlock();
 		return ret;
 	}
 	void locked_push_back(T const& data)
 	{
 		m_mutex.lock();
-		this->push_back(data);
+		m_data.push_back(data);
 		m_mutex.unlock();
 	}
 	void locked_push_front(T const& data)
 	{
 		m_mutex.lock();
-		this->push_front(data);
+		m_data.push_front(data);
 		m_mutex.unlock();
 	}
 	void locked_pop_front()
 	{
 		m_mutex.lock();
-		this->pop_front();
+		m_data.pop_front();
 		m_mutex.unlock();
 	}
 	void locked_clear()
 	{
 		m_mutex.lock();
-		this->clear();
+		m_data.clear();
 		m_mutex.unlock();
 	}
 };
