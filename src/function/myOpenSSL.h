@@ -223,19 +223,19 @@ namespace ns_my_std
 			memcpy(&in_plain[0], input.data(), input.size());
 			vector<unsigned char> out_ciphertext;
 			aes_encrypt(passwd.data(), passwd.size(), in_plain, out_ciphertext, iv);
-			thelog << out_ciphertext.size() << endi;
+			//thelog << out_ciphertext.size() << endi;
 
 			//添加加密后数据
 			tmp.AddData(&out_ciphertext[0], out_ciphertext.size());
-			thelog << tmp.size() << endi;
+			//thelog << tmp.size() << endi;
 
 			output.reserve(tmp.size() * 4 / 3 + 4 + 1);//三字节转为4字节，编码函数在最后还会加上一个字符串结束符
-			thelog << output.capacity() << " " << output.size() << endi;
+			//thelog << output.capacity() << " " << output.size() << endi;
 			int n = CBase64::Base64Enc(output.lockBuffer(), tmp.data(), tmp.size());
 			output.releaseBuffer();
 			if (n > (int)output.capacity())thelog << "长度不足" << ende;
 			output.setSize(n);
-			thelog << output.size() << " [" << output.data() << "]" << endi;
+			//thelog << output.size() << " [" << output.data() << "]" << endi;
 
 			return true;
 		}

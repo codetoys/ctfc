@@ -591,11 +591,20 @@ namespace ns_my_std
 			fclose(file);
 			return file_size;
 		}
-		bool DeleteFile(char const * filename)
+		bool DeleteFile(char const* filename)
 		{
 			if (0 != remove(filename))
 			{
 				m_msg = "删除错误";
+				return false;
+			}
+			return true;
+		}
+		bool RenameFile(char const* from,char const* to)
+		{
+			if (0 != rename(from, to))
+			{
+				m_msg = "重命名错误";
 				return false;
 			}
 			return true;
