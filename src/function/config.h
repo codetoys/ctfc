@@ -58,6 +58,7 @@ using namespace ns_my_std_interface2;
 
 //需要补充的定义
 #ifdef _LINUX_CC
+#define sprintf_s snprintf
 inline ostream& operator<<(ostream& os, const string& tmp)
 {
 	return os << tmp.c_str();

@@ -13,60 +13,30 @@
 
 namespace ns_my_std
 {
-	//数据压缩，压缩后数据自带解压缩以后长度
+	//数据压缩，压缩后数据自带解压缩以后长度，8字节，压缩方的字节序（zlib要求自己想办法传输原始长度）
 	class CMyZip
 	{
 	public:
-		typedef unsigned long T_LEN;
-		//默认压缩级别
-		static bool Compress(char const * src, long srclen, CBuffer & output)
-		{
-			return Compress2(src, srclen, output, Z_DEFAULT_COMPRESSION);
-		}
-		//level 0-9 越大压缩率越高耗时越长
-		static bool Compress2(char const * src, T_LEN srclen, CBuffer & output, int level)
-		{
-			if (Z_DEFAULT_COMPRESSION == level);
-			else if (level < 0)level = 0;
-			else if (level > 9)level = 9;
-			else;
+		typedef uint64_t T_LEN;
 
-			if (!output.reserve(compressBound(srclen) + sizeof(T_LEN)))
-			{
-				thelog << "内存不足" << ende;
-				return false;
-			}
-			T_LEN len = output.capacity() - sizeof(T_LEN);
-			if (0 != compress2((unsigned char *)output.getbuffer() + sizeof(T_LEN), &len, (unsigned char *)src, srclen, level))
-			{
-				thelog << "压缩失败" << ende;
-				return false;
-			}
-			T_LEN tmp = srclen;
-			memmove(output.getbuffer(), &tmp, sizeof(T_LEN));
-			output.setSize(sizeof(T_LEN) + len);
-			return true;
-		}
-		static bool UnCompress(char const * src, long srclen, CBuffer & output)
-		{
-			return _UnCompress(src, srclen, output, 1);
-		}
-		static bool _UnCompress(char const * src, long srclen, CBuffer & output, long buf_override)
+	private:
+		static bool _UnCompress(char const * src, T_LEN srclen, CBuffer & output, long buf_override)
 		{
 			T_LEN outsize;//压缩数据记录的解压缩后长度
 			memmove(&outsize, src, sizeof(T_LEN));
-			//thelog << "记录的长度 " << outsize << endi;
+			//thelog << "记录的长度 " << CMyTools::ToHex((char*)&outsize, sizeof(T_LEN)) << " : " << outsize <<" 输入长度 "<< srclen << endi;
 			if (0 == outsize)
 			{
 				output.setSize(0);
 				return true;
 			}
-			if (!output.reserve(outsize*buf_override))
+			if (!output.reserve(outsize * buf_override))
 			{
 				thelog << "内存不足" << ende;
 				return false;
 			}
-			unsigned long len = output.capacity();
+			uLongf len = output.capacity();
+			//thelog << "预设缓冲区 " << len << endi;
 			int ret = uncompress((unsigned char *)output.getbuffer(), &len, (unsigned char *)src + sizeof(T_LEN), srclen - sizeof(T_LEN));
 			if (0 != ret)
 			{
@@ -100,13 +70,47 @@ namespace ns_my_std
 			return true;
 		}
 	public:
+		//默认压缩级别
+		static bool Compress(char const * src, T_LEN srclen, CBuffer & output)
+		{
+			return Compress2(src, srclen, output, Z_DEFAULT_COMPRESSION);
+		}
+		//level 0-9 越大压缩率越高耗时越长
+		static bool Compress2(char const * src, T_LEN srclen, CBuffer & output, int level)
+		{
+			if (Z_DEFAULT_COMPRESSION == level);
+			else if (level < 0)level = 0;
+			else if (level > 9)level = 9;
+			else;
+
+			if (!output.reserve(compressBound(srclen) + sizeof(T_LEN)))
+			{
+				thelog << "内存不足" << ende;
+				return false;
+			}
+			uLongf len = output.capacity() - sizeof(T_LEN);
+			if (0 != compress2((unsigned char *)output.getbuffer() + sizeof(T_LEN), &len, (unsigned char *)src, srclen, level))
+			{
+				thelog << "压缩失败" << ende;
+				return false;
+			}
+			T_LEN tmp = srclen;
+			memmove(output.getbuffer(), &tmp, sizeof(T_LEN));
+			output.setSize(sizeof(T_LEN) + len);
+			return true;
+		}
+		static bool UnCompress(char const * src, T_LEN srclen, CBuffer & output)
+		{
+			return _UnCompress(src, srclen, output, 2);
+		}
+	public:
 		static int CZip_test(int argc, char ** argv)
 		{
 			CEasyFile file;
 			CBuffer input;
 			CBuffer output;
 			CBuffer output2;
-			if (!file.ReadFile("../function/myZIP.h", input))
+			if (!file.ReadFile("../../third/ctfc/src/function/myZIP.h", input))
 			{
 				thelog << "读文件失败" << ende;
 				return __LINE__;
