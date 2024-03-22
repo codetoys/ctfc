@@ -321,7 +321,7 @@ namespace ns_my_std
 			memset(aes_key, 0, keylength / 8);
 			if (!RAND_bytes(aes_key, keylength / 8))
 			{
-				exit(-1);
+				return __LINE__;
 			}
 
 			char const* input = "12345678901234567890";

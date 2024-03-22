@@ -600,6 +600,15 @@ namespace ns_my_std
 			}
 			return true;
 		}
+		bool IsFileExist(char const* filename)
+		{
+			if (0 != access(filename, F_OK))
+			{
+				m_msg = "删除错误";
+				return false;
+			}
+			return true;
+		}
 		bool RenameFile(char const* from,char const* to)
 		{
 			if (0 != rename(from, to))
@@ -763,22 +772,17 @@ namespace ns_my_std
 		{
 			return GetTimeSpanMS() / 1000;
 		}
-	};
-	class CMyTimeStamp
-	{
-	public:
-		static int64_t GetTS_s()
+	
+		int64_t GetTS_s()const
 		{
 			return GetTS_ms() / 1000;
 		}
-		static int64_t GetTS_ms()
+		int64_t GetTS_ms()const
 		{
 			return GetTS_us() / 1000;
 		}
-		static int64_t GetTS_us()
+		int64_t GetTS_us()const
 		{
-			timeval t;
-			gettimeofday(&t, NULL);
 			return (int64_t)t.tv_sec * 1000*1000 + t.tv_usec;
 		}
 	};
