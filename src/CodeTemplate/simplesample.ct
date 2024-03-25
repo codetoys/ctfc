@@ -1,0 +1,10 @@
+simple sample
+
+========================
+<%replace%>
+replace block
+<%endreplace%>
+<%replace sys%>
+replace block 2
+<%endreplace%>
+========================

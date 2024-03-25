@@ -40,6 +40,10 @@
     <None Include="make.sh" />
     <None Include="src\httpd\wwwroot\page\developing.htm" />
     <None Include="src\httpd\wwwroot\page\function_menu.htm" />
+    <None Include="src\CodeTemplate\makefile.mk" />
+    <None Include="src\CodeTemplate\rebuild.sh" />
+    <None Include="src\CodeTemplate\run.sh" />
+    <None Include="src\CodeTemplate\simplesample.ct" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\env\CommandSet.h">
@@ -171,6 +175,9 @@
     <ClInclude Include="src\httpd\myUserManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="src\CodeTemplate\CodeTemplate.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\env\env_t.cpp">
@@ -192,6 +199,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\httpd\myThread.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CodeTemplate\CodeTemplate_t.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

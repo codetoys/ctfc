@@ -140,6 +140,10 @@
     <None Include="platform\_foreach.sh" />
     <None Include="platform\_makecpp.sh" />
     <None Include="platform\_make_dir_list.sh" />
+    <None Include="src\CodeTemplate\makefile.mk" />
+    <None Include="src\CodeTemplate\rebuild.sh" />
+    <None Include="src\CodeTemplate\run.sh" />
+    <None Include="src\CodeTemplate\simplesample.ct" />
     <None Include="src\env\makefile.mk" />
     <None Include="src\env\rebuild.sh" />
     <None Include="src\env\run.sh" />
@@ -160,6 +164,7 @@
     <None Include="src\makeall.sh" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\CodeTemplate\CodeTemplate.h" />
     <ClInclude Include="src\env\CommandSet.h" />
     <ClInclude Include="src\env\env.h" />
     <ClInclude Include="src\env\myLog.h" />
@@ -205,6 +210,7 @@
     <ClInclude Include="src\httpd\myUserManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\CodeTemplate\CodeTemplate_t.cpp" />
     <ClCompile Include="src\env\env_t.cpp" />
     <ClCompile Include="src\env\myLog.cpp" />
     <ClCompile Include="src\env\myUtil.cpp" />
