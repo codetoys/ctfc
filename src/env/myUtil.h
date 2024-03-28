@@ -90,8 +90,6 @@ namespace ns_my_std
 	bool InitActiveCgi(char const * appname, long max_log_size, int argc, char ** argv);
 	//应用退出函数
 	void ExitActiveApp(int exit_code);
-	//fork进程的函数
-	pid_t ActiveFork();
 	//实际的启动函数
 	bool _InitActiveApp(char const * appname, long max_log_size, bool isCgi, int argc, char ** argv);
 
@@ -318,7 +316,7 @@ namespace ns_my_std
 
 		long count()
 		{
-			return m_list.size();
+			return (long)m_list.size();
 		}
 
 		string operator[](unsigned int nPos)
@@ -427,6 +425,9 @@ namespace ns_my_std
 	void ShowPS();
 	//仅输出头
 	string & ShowPS_head(string & ret);
+
+#ifdef _WINDOWS
+#else
 	//仅输出头和本PID
 	string & ShowPS_pid(pid_t pid, string & ret);
 	//跟踪进程时间和内存
@@ -455,6 +456,7 @@ namespace ns_my_std
 			t1 = time(NULL);//重置计时
 		}
 	};
+#endif
 
 	//获取命令行特定参数
 	//检查单个参数是否存在
@@ -493,7 +495,7 @@ namespace ns_my_std
 			ret = "";
 			ret += "file name : [" + m_filename + "]\n";
 			char buf[1024];
-			sprintf(buf, "m_buf=[%ld] m_bufsize=[%ld] m_bufcount=[%ld] m_bufpos=[%ld]\n", (long)m_buf, m_bufsize, m_bufcount, m_bufpos);
+			sprintf(buf, "m_buf=[%p] m_bufsize=[%ld] m_bufcount=[%ld] m_bufpos=[%ld]\n", m_buf, m_bufsize, m_bufcount, m_bufpos);
 			ret += buf;
 			if (NULL != m_buf)
 			{
@@ -552,10 +554,10 @@ namespace ns_my_std
 		//标准行读
 		char * ReadLine(char * p, size_t size)
 		{
-			char * ret = fgets(p, size, m_file);
+			char * ret = fgets(p, (int)size, m_file);
 			if (NULL != ret)
 			{
-				long len = strlen(ret);
+				long len = (long)strlen(ret);
 				if (len > 0)
 				{
 					if ('\n' == ret[len - 1])
@@ -633,7 +635,7 @@ namespace ns_my_std
 				m_bufcount = m_bufcount - m_bufpos;
 				m_bufpos = 0;
 				//读取填充缓存
-				long readcount = fread(m_buf + m_bufcount, 1, m_bufsize - m_bufcount, m_file);
+				long readcount = (long)fread(m_buf + m_bufcount, 1, m_bufsize - m_bufcount, m_file);
 				//if(readcount<0)
 				//{
 				//	thelog<<"读文件错误"<<ende;
@@ -985,9 +987,11 @@ namespace ns_my_std
 		}
 
 	};
-
+#ifdef _WINDOWS
+#else
 	//控制台输入密码，不回显
 	string inputPassword(bool repeat = false);
+#endif
 
 	string to_db_style(string const & struct_style);
 
@@ -996,8 +1000,11 @@ namespace ns_my_std
 	//按微秒睡眠
 	void SleepUSeconds(unsigned long useconds);
 
+#ifdef _WINDOWS
+#else
 	//启动精灵进程，注意这个函数在两个驻留进程中分别执行，否则客户端不能看到启动日志
 	bool start_demon();
+#endif
 
 	//所有信号和异常捕获
 	int __all_sig_catch(int argc,char ** argv, int fun(int, char **));

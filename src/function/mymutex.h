@@ -1,4 +1,4 @@
-//mymutex.h
+﻿//mymutex.h
 //
 // Copyright (c) ct  All rights reserved.
 // 版权所有 ct 保留所有权利
@@ -6,15 +6,23 @@
 
 #pragma once
 
+#ifdef _WINDOWS
+#else
 #include "mymutex1.h"
+#endif
 #include "mymutex2.h"
 #include "mymutex3.h"
 
 namespace ns_my_std
 {
-	using CMyRWMutex = CMyRWMutex1;
-	using CMyShmMutex = CMyRWMutex2;
+#ifdef _WINDOWS
+#else
+	using CMyRWMutex = CSemRWMutex;
+#endif
+	using CMyShmMutex = CAtomicRWMutex;
 
+#ifdef _WINDOWS
+#else
 	//线程同步对象
 	class CPThreadMutex
 	{
@@ -50,4 +58,5 @@ namespace ns_my_std
 		}
 		int signal()const { return pthread_cond_signal((pthread_cond_t*)&m_cond); }
 	};
+#endif
 }

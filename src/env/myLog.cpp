@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) ct  All rights reserved.
 // 版权所有 ct 保留所有权利
 //
@@ -50,7 +50,7 @@ namespace ns_my_std
 	}
 	Log& Log::operator<<(LogEnd const& end)
 	{
-		m_mutex.lock();
+		m_mutex.WLock();
 		_ThreadSpec* ThreadSpec = _getThreadSpec();
 		char nCh = end.end;
 		bool isImportant = false;
@@ -178,7 +178,7 @@ namespace ns_my_std
 		ThreadSpec->m__line = 0;
 		ThreadSpec->m_buf.str("");
 
-		m_mutex.unlock();
+		m_mutex.WUnLock();
 		return *this;
 	}
 

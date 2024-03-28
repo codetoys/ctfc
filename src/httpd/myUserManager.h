@@ -7,8 +7,6 @@
 
 #include "../env/env.h"
 
-extern char const * INI_SECITON;
-
 #define ADMIN_NAME (CUserManager::getInstPtr()->admin_name)
 #define ADMIN_PASS (CUserManager::getInstPtr()->admin_password)
 #define APPUSER_NAME (CUserManager::getInstPtr()->appuser_name)
@@ -31,17 +29,17 @@ namespace ns_my_std
 		//数据用户，用于数据客户端（APP）
 		string appuser_name;
 		string appuser_password;
-		
+
 	public:
 		bool InitUserManager()
 		{
-			CUserManager * pUM = CUserManager::getInstPtr();
-			pUM->admin_name = CSystemParam::SystemParam_GetString(INI_SECITON, "adminname", "admin");
-			pUM->admin_password = CSystemParam::SystemParam_GetString(INI_SECITON, "adminpass", "iloveyou");
-			pUM->user_name = CSystemParam::SystemParam_GetString(INI_SECITON, "username", "user");
-			pUM->user_password = CSystemParam::SystemParam_GetString(INI_SECITON, "userpass", "user");
-			pUM->appuser_name = CSystemParam::SystemParam_GetString(INI_SECITON, "appusername", "appuser");
-			pUM->appuser_password = CSystemParam::SystemParam_GetString(INI_SECITON, "appuserpass", "apppass");
+			CUserManager* pUM = CUserManager::getInstPtr();
+			pUM->admin_name = "admin";
+			pUM->admin_password = "iloveyou";
+			pUM->user_name = "user";
+			pUM->user_password = "user";
+			pUM->appuser_name = "appuser";
+			pUM->appuser_password = "apppass";
 
 			thelog << "管理员 " << pUM->admin_name << "/" << pUM->admin_password << endi;
 			thelog << "用户 " << pUM->user_name << "/" << pUM->user_password << endi;
@@ -50,10 +48,10 @@ namespace ns_my_std
 			return true;
 		}
 		//管理员身份验证
-		static bool CheckAdminPassword(char const * _user, char const * _pass)
+		static bool CheckAdminPassword(char const* _user, char const* _pass)
 		{
-			CUserManager const * pUM = CUserManager::getInstPtr();
-			if (pUM->admin_name == _user &&  pUM->admin_password == _pass)
+			CUserManager const* pUM = CUserManager::getInstPtr();
+			if (pUM->admin_name == _user && pUM->admin_password == _pass)
 			{
 				return true;
 			}
@@ -64,10 +62,10 @@ namespace ns_my_std
 			}
 		}
 		//APP客户身份验证
-		static bool CheckAppUserPassword(char const * _user, char const * _pass)
+		static bool CheckAppUserPassword(char const* _user, char const* _pass)
 		{
-			CUserManager const * pUM = CUserManager::getInstPtr();
-			if (pUM->appuser_name == _user &&  pUM->appuser_password == _pass)
+			CUserManager const* pUM = CUserManager::getInstPtr();
+			if (pUM->appuser_name == _user && pUM->appuser_password == _pass)
 			{
 				return true;
 			}
@@ -78,7 +76,7 @@ namespace ns_my_std
 			}
 		}
 		//任何用户身份验证
-		static bool CheckUser(char const * _user, char const * _pass)
+		static bool CheckUser(char const* _user, char const* _pass)
 		{
 			DEBUG_LOG << "[" << _user << "]" << "[" << _pass << "]" << endi;
 			if (CheckAdminPassword(_user, _pass))
@@ -89,8 +87,8 @@ namespace ns_my_std
 			{
 				return true;
 			}
-			CUserManager const * pUM = CUserManager::getInstPtr();
-			if (pUM->user_name == _user &&  pUM->user_password == _pass)
+			CUserManager const* pUM = CUserManager::getInstPtr();
+			if (pUM->user_name == _user && pUM->user_password == _pass)
 			{
 				return true;
 			}

@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) ct  All rights reserved.
 // 版权所有 ct 保留所有权利
 //
@@ -8,15 +8,6 @@
 
 using namespace ns_my_std;
 
-void test_log()
-{
-	//theLog.setMaxFileSize(100);
-	while (UIInput("b=break", "") != "b")
-	{
-		thelog << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << endi;
-	}
-	ExitActiveApp(0);
-}
 int main(int argc,char ** argv)
 {
 	if (!InitActiveApp("myenv", 0, argc, argv))return __LINE__;
@@ -35,14 +26,6 @@ int main(int argc,char ** argv)
 	DEBUG_LOG<<"测试"<<endi;
 
 	thelog << "__cplusplus " << __cplusplus << endi;
-
-	//test_log();
-
-	//if(0==ActiveFork())
-	//{
-	//	DEBUG_LOG<<"测试"<<endi;
-	//	ExitActiveApp(__LINE__);
-	//}
 
 	G_IS_DEBUG = true;
 

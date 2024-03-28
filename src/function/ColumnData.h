@@ -1,4 +1,4 @@
-//ColumnData.h 列数据
+﻿//ColumnData.h 列数据
 //
 // Copyright (c) ct  All rights reserved.
 // 版权所有 ct 保留所有权利
@@ -81,7 +81,7 @@ namespace ns_my_std
 		{
 			if (COLUMN_TYPE_STRING_POOL == type)return atol(string_data.c_str());
 			else if (COLUMN_TYPE_LONG == type)	return long_data;
-			else return double_data;
+			else return (long)double_data;
 		}
 		double GetDouble()const
 		{

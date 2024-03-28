@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) ct  All rights reserved.
 // 版权所有 ct 保留所有权利
 //
@@ -8,7 +8,10 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <sys/stat.h>
+#ifdef _WINDOWS
+#else
 #include <sys/wait.h>
+#endif
 #include "../function/myprocess.h"
 #include "myThread.h"
 
@@ -166,7 +169,7 @@ namespace ns_my_std
 		bool cmd_bPause;//命令：暂停，管理服务保持，普通服务停止，初始为true，初始化完成后设置为false
 		bool state_bPause;//状态：普通服务已暂停，该值设置表明HTTPD已经实施了暂停
 		long max_child;
-		CMyRWMutex2::mySEM m_sem;//互斥对象
+		CAtomicRWMutex::mySEM m_sem;//互斥对象
 
 		main_process_info admin_process;//后台监控进程
 		main_process_info httpd_main_process;//AS服务主进程
@@ -296,6 +299,8 @@ namespace ns_my_std
 		CMySocket m_s_admin;//主socket，管理端口
 		SocketServerData * m_pShmSocketServerData;
 		map<pid_t, CMySocket > m_child_socket;//记录子进程的socket，子进程结束时关闭不用的socket，创建子进程后立即关闭可能出问题
+
+		bool m_demon = true;
 	private:
 		void clearStoppedChild()
 		{
@@ -688,7 +693,7 @@ namespace ns_my_std
 
 					G_PROCESS_INFO->state = PROCESS_STATE_RUN;
 
-					start_demon();//进入精灵进程模式
+					if (m_demon)start_demon();//进入精灵进程模式
 
 					bool static_bM = false;
 					while (SvrAccept(pProcess, &static_bM))
@@ -774,13 +779,11 @@ namespace ns_my_std
 		}
 	public:
 		//启动服务循环，除非服务结束，否则不会返回。maxchild小于等于0或大于最大值都等同于最大值。理论上pSocketServerData应该来自共享内存
-		bool Start(SocketServerData * pSocketServerData, char const * server_name, unsigned short portnum, ISocketServerProcess * pProcess, long maxchild, CHttpProcess * pHttpProcess)
+		bool Start(SocketServerData * pSocketServerData, char const * server_name, unsigned short portnum, ISocketServerProcess * pProcess, long maxchild, CHttpProcess * pHttpProcess,bool demon)
 		{
-#ifdef MyAS_THREAD
-			bool mode = false;
-#else
-			bool mode = true;
-#endif
+			m_demon = demon;
+
+			bool mode = false;//是否使用多进程模式
 			CCurrentProcess::MultiProcessMode(&mode);
 
 			m_pShmSocketServerData = pSocketServerData;

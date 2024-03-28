@@ -1,0 +1,134 @@
+//_cc_C${SYS}.h 自动生成的代码
+//
+// Copyright (c) ct  All rights reserved.
+// 版权所有 ct 保留所有权利
+//
+
+//警告：本文件由CT系统自动生成，不可手工修改
+
+#ifndef CTFC_${SYS}_H
+#define CTFC_${SYS}_H 1
+
+//如果需要使用内存数据库直连功能，请在包含本头文件之前定义 CTFC_${SYS}_H_SHM_DB
+//如果需要使用MariaDB功能，请在包含本头文件之前定义 CTFC_${SYS}_H_MARIA_DB
+<%foreach table in ${tables}%>
+#include "_cc_${SYS}_${table}.h"
+<%endforeach%>
+<%foreach sequence in sequences%>
+#include "_cc_${SYS}_${sequence}.h"
+<%endforeach%>
+
+using namespace ns_my_std;
+
+namespace ${NAMESPACE}
+{
+	class CShmDB_${SYS}
+	{
+	public:
+		//表
+		<%foreach table in tables%>
+		C${SYS}_${table} m_${table};//${table.comment}
+		<%endforeach%>
+
+		//序列
+		<%foreach sequence in sequences%>
+		C${SYS}_${sequence} m_${sequence};//${sequence.comment}
+		<%endforeach%>
+	public:
+#ifdef CTFC_${SYS}_H_SHM_DB
+#define CTFC_${SYS}_H_WITH_DB
+		typedef CShmDB T_DB;
+#endif
+
+#ifdef CTFC_${SYS}_H_MARIA_DB
+#define CTFC_${SYS}_H_WITH_DB
+		typedef CMariaDB T_DB;
+#endif
+	private:
+#ifdef CTFC_${SYS}_H_WITH_DB
+		T_DB m_ShmDB;
+		T_DB * pDB;
+#endif
+	public:
+#ifdef CTFC_${SYS}_H_WITH_DB
+		//返回内部数据库对象
+		T_DB * getDB(){return pDB;}
+		//直连初始化
+		bool DBInit(char const * db = nullptr)
+		{
+#ifdef CTFC_${SYS}_H_SHM_DB
+			CShmActiveObjects * p;
+			p = m_ShmDB.GetCShmActiveObjects();
+			if (!p->isConnected() && !p->Attach(false))
+#endif
+#ifdef CTFC_${SYS}_H_MARIA_DB
+			if(!m_ShmDB.Connect(db))
+#endif
+			{
+				thelog << "C${SYS}连接失败" << ende;
+				return false;
+			}
+			DEBUG_LOG << "C${SYS}连接成功" << endi;
+
+			pDB = &m_ShmDB;
+			
+			<%foreach table in tables%>
+			m_${table}.Init(pDB);
+			<%endforeach%>
+
+			<%foreach sequence in sequences%>
+			m_${sequence}.Init(pDB);
+			<%endforeach%>
+
+			return true;
+		}
+		//直连断开
+		bool DBUnInit()
+		{
+#ifdef CTFC_${SYS}_H_SHM_DB
+			CShmActiveObjects * p;
+			p = m_ShmDB.GetCShmActiveObjects();
+			if (p->isConnected())p->Detach();
+#endif
+#ifdef CTFC_${SYS}_H_MARIA_DB
+			pDB->Close();
+#endif
+			pDB = NULL;
+			return true;
+		}
+		//直连创建所有数据库对象
+		bool DBCreateAllDBObject()
+		{
+			//创建表
+			<%foreach table in tables%>
+			if(!m_${table}.CreateTable())return false;
+			<%endforeach%>
+
+			//创建序列
+			<%foreach sequence in sequences%>
+			if(!m_${sequence}.CreateSequence())return false;
+			<%endforeach%>
+
+			return true;
+		}
+		//直连显示所有数据库对象
+		bool DBShowAllDBObject()
+		{
+			//显示表
+			<%foreach table in tables%>
+			if(!m_${table}.Show())return false;
+			<%endforeach%>
+
+			//显示序列
+			thelog << "sequence:" << endl << "-------------------------" << endl;
+			<%foreach sequence in sequences%>
+			theLog<< "${sequence} " << m_${sequence}.GetSequenceValue() << endl;
+			<%endforeach%>
+			theLog << "-------------------------" << endi;
+
+			return true;
+		}
+#endif
+	};
+}
+#endif

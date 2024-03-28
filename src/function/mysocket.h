@@ -1,4 +1,4 @@
-//mysocket.h
+﻿//mysocket.h
 //
 // Copyright (c) ct  All rights reserved.
 // 版权所有 ct 保留所有权利
@@ -6,7 +6,7 @@
 
 #pragma once
 
-#ifndef _MS_VC
+#ifndef _WINDOWS
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netinet/in.h>
@@ -76,10 +76,10 @@ namespace ns_my_std
 		}
 		int CloseSocket(int _s)
 		{
-#ifndef _MS_VC
-			return close(_s);
-#else
+#ifdef _WINDOWS
 			return closesocket(_s);
+#else
+			return close(_s);
 #endif
 		}
 		bool Bind(unsigned short portnum)//绑定到端口
@@ -132,7 +132,11 @@ namespace ns_my_std
 				getsockname(cs.s, (sockaddr*)(void*)&cs.mysa, &len_sa);
 				getpeername(cs.s, (sockaddr*)(void*)&cs.peersa, &len_sa);
 				int iKeepAlive = 1;
+#ifdef _WINDOWS
+				setsockopt(cs.s, SOL_SOCKET, SO_KEEPALIVE, (char const *) & iKeepAlive, sizeof(iKeepAlive));
+#else
 				setsockopt(cs.s, SOL_SOCKET, SO_KEEPALIVE, (void *)&iKeepAlive, sizeof(iKeepAlive));
+#endif
 			}
 			return cs;
 		}
@@ -218,7 +222,10 @@ namespace ns_my_std
 				memcpy(&peersa.sin_addr.s_addr, ph->h_addr_list[0], ph->h_length);
 			}
 			int syncnt = _syncnt;
+#ifdef _WINDOWS
+#else
 			setsockopt(s, IPPROTO_TCP, TCP_SYNCNT, &syncnt, sizeof(syncnt));//Linux下设置连接重传次数，0为默认，默认是6，需要1+2+4+8+16+32+64=127秒才能返回（实测大约130秒）
+#endif
 			if (connect(s, (sockaddr*)(void*)&peersa, sizeof(struct sockaddr_in)) < 0)
 			{
 				Close();
@@ -227,7 +234,11 @@ namespace ns_my_std
 			getsockname(s, (sockaddr*)(void*)&mysa, &len_sa);
 			getpeername(s, (sockaddr*)(void*)&peersa, &len_sa);
 			int iKeepAlive = 1;
+#ifdef _WINDOWS
+			setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (char const *)&iKeepAlive, sizeof(iKeepAlive));
+#else
 			setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (void *)&iKeepAlive, sizeof(iKeepAlive));
+#endif
 			return true;
 		}
 		bool IsConnected() { if (isSTDOUT)return true; else return -1 != s; }//是否处于连接状态，只对客户socket有意义

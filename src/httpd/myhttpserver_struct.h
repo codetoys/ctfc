@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) ct  All rights reserved.
 // 版权所有 ct 保留所有权利
 //
@@ -105,7 +105,6 @@ namespace ns_my_std
 		struct WebCommandData
 		{
 			sstring<256> command_id;
-			long WebCommandType;
 			long count;
 			long count_err;
 
@@ -114,7 +113,6 @@ namespace ns_my_std
 			static bool AddTableColumns(CHtmlDoc::CHtmlTable2 & table)
 			{
 				table.AddCol("command_id");
-				table.AddCol("type", CHtmlDoc::CHtmlDoc_DATACLASS_RIGHT);
 				table.AddCol("count", CHtmlDoc::CHtmlDoc_DATACLASS_RIGHT);
 				table.AddCol("count_err", CHtmlDoc::CHtmlDoc_DATACLASS_RIGHT);
 				return true;
@@ -122,7 +120,6 @@ namespace ns_my_std
 			bool AddTableData(CHtmlDoc::CHtmlTable2 & table)const
 			{
 				table.AddData(command_id.c_str());
-				table.AddData(WebCommandType);
 				table.AddData(count, true);
 				table.AddData(count_err, true);
 				return true;
@@ -134,7 +131,7 @@ namespace ns_my_std
 
 		sstring<1024 > m_root;//根目录
 		
-		CMyRWMutex2::mySEM m_webcommand_sem;//互斥对象
+		CAtomicRWMutex::mySEM m_webcommand_sem;//互斥对象
 
 		WebCommandData m_web_command_data_s[CHttpServerDatas_MAX];
 

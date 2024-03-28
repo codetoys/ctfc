@@ -56,7 +56,7 @@ namespace ns_my_std
 			{
 				timer_job();
 				ActiveWorkerThread();
-				//定时激活发送线程，避免发送线程无限期等待
+				//定时激活工作线程，避免工作线程错过信号而无限期等待
 				SleepUSeconds(m_interval_ms * 1000);
 			}
 		}

@@ -1,4 +1,4 @@
-//mymutex1.h
+﻿//mymutex1.h
 //
 // Copyright (c) ct  All rights reserved.
 // 版权所有 ct 保留所有权利
@@ -29,24 +29,13 @@ union semun
 #define semctl bol_ipc_semctl
 #endif
 
-//两互斥类，一个用于完全互斥，一个用于多写单读互斥
-
-//CMyMutex
-//简单互斥类
-//创建一个新的用Create,销毁用Destory，获得ID以便供其它进程使用用GetID
-//获得一个已存在的用Attach，断开用Detach
-//锁定用Lock/TryLock，解除锁定用UnLock,TryLock不阻塞立即返回，Lock阻塞直道获得资源
-//通常的操作顺序：
-//管理进程 Create GetID 保存ID到共享范围内的适当位置（文件、内存、共享内存等） Lock/TryLock/UnLock Destory
-//用户进程 从适当位置获得ID Attach Lock/TryLock/UnLock Detach
-
-//CMyRWMutex1
+//CSemRWMutex
 //读写互斥
 
 namespace ns_my_std
 {
 	//对象实例不可复制不可移动，内部记录进程操作状态和线程操作状态
-	class CMyRWMutex1
+	class CSemRWMutex
 	{
 	private:
 		int sem_id{ -1 };//信号量ID
@@ -94,18 +83,18 @@ namespace ns_my_std
 	public:
 		thread_data* getThreadData()const
 		{
-			thread_local map<CMyRWMutex1 const*, thread_data > d;//通过对象地址区分不同的对象
+			thread_local map<CSemRWMutex const*, thread_data > d;//通过对象地址区分不同的对象
 			return &d[this];
 		}
 
 		//禁止移动和复制（不能用于vector，因为vector会移动对象）
-		CMyRWMutex1() = default;
-		CMyRWMutex1(CMyRWMutex1 const&) = delete;
-		CMyRWMutex1& operator =(CMyRWMutex1 const&) = delete;
-		CMyRWMutex1(CMyRWMutex1 const&&) = delete;
-		CMyRWMutex1& operator =(CMyRWMutex1 const&&) = delete;
+		CSemRWMutex() = default;
+		CSemRWMutex(CSemRWMutex const&) = delete;
+		CSemRWMutex& operator =(CSemRWMutex const&) = delete;
+		CSemRWMutex(CSemRWMutex const&&) = delete;
+		CSemRWMutex& operator =(CSemRWMutex const&&) = delete;
 
-		~CMyRWMutex1()
+		~CSemRWMutex()
 		{
 			if (0 != count_WLock || 0 != count_RLock)
 			{

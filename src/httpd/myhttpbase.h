@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) ct  All rights reserved.
 // 版权所有 ct 保留所有权利
 //
@@ -427,7 +427,11 @@ namespace ns_my_std
 				int content_length = atol(penv);
 				p = new char[content_length + 1];
 				if (NULL == p)return false;
+#ifdef _WINDOWS
+				if (content_length != _read(STDIN_FILENO, p, content_length))return false;
+#else
 				if (content_length != read(STDIN_FILENO, p, content_length))return false;
+#endif
 				p[content_length] = '\0';
 				tmp = p;
 				AnalyzeParam(tmp);
@@ -765,8 +769,6 @@ namespace ns_my_std
 	//命令访问方式：/bin/command_id.asp(.aspx .asmx)
 	class CWebCommand
 	{
-	public:
-		enum TYPE { TYPE_WEB_COMMAMD = 0, TYPE_WEB_SERVICE, TYPE_DIRECT, TYPE_WEB_SERVICE_RPC, TYPE_TUNNEL };
 	private:
 		string ReplaceDot(string const & str)
 		{
@@ -776,11 +778,6 @@ namespace ns_my_std
 			while (str.npos != (pos = ret.find('/')))ret.replace(pos, 1, "_");
 			return ret;
 		}
-		TYPE WebCommandType;
-		friend class IWebService;
-		friend class IWebServiceRPC;
-		friend class IWebCommand_Direct;
-		friend class IWebCommand_Tunnel;
 	public:
 		bool isVirtual;//是否是虚拟命令，仅出现在命令表中但并非使用命令接口来实现
 		bool isAdmin;//是否是内置页面
@@ -806,14 +803,7 @@ namespace ns_my_std
 			return true;
 		}
 
-		//CheckPoint支持
-		virtual bool doCheckPoint(char const * _dir) { return true; }
-		virtual bool doRestoreCheckPoint(char const * _dir) { return true; }
-
-		//demon支持
-		virtual bool doDemon(bool * shutdown, bool * pause, int * _ret) { return true; }
-
-		CWebCommand() { clear(); WebCommandType = TYPE_WEB_COMMAMD; SetWebCommand("CWebCommand", "CWebCommand", "原始CWebCommand"); }
+		CWebCommand() { clear();  SetWebCommand("CWebCommand", "CWebCommand", "原始CWebCommand"); }
 		void clear()
 		{
 			isVirtual = false;
@@ -825,8 +815,6 @@ namespace ns_my_std
 			demon = false;
 			params.clear();
 		}
-		int getType()const { return WebCommandType; }
-		void setType(TYPE type) { WebCommandType = type; }
 		void SetNotOnHomePage() { notonhomepage = true; }
 		void SetHide() { notonhomepage = hide = true; }
 		void SetAutoRefresh() { AutoRefresh = true; }

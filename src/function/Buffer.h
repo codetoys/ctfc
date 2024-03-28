@@ -33,12 +33,12 @@ namespace ns_my_std
 		CBuffer(CBuffer const & tmp) :p(NULL), buffer_size(0), data_size(0)
 		{
 			_init();
-			SetData(tmp.data(), tmp.data_size);
+			SetData(tmp.data(), (long)tmp.data_size);
 		}
 		CBuffer & operator=(CBuffer const & tmp)
 		{
 			_init();
-			SetData(tmp.data(), tmp.data_size);
+			SetData(tmp.data(), (long)tmp.data_size);
 			return *this;
 		}
 		~CBuffer()
@@ -86,13 +86,13 @@ namespace ns_my_std
 		{
 			if (!reserve(data_size + len))return false;
 			memmove(p + data_size, data, len);
-			setSize(data_size + len);
+			setSize((long)data_size + len);
 			return true;
 		}
 		bool SetData(char const * sz)
 		{
 			setSize(0);
-			return AddData((void *)sz, strlen(sz));
+			return AddData((void *)sz, (long)strlen(sz));
 		}
 		bool SetData(char const * sz, long len)
 		{
@@ -136,12 +136,12 @@ namespace ns_my_std
 		CUnsignedBuffer(CUnsignedBuffer const& tmp)
 		{
 			_init();
-			SetData(tmp.data(), tmp.data_size);
+			SetData(tmp.data(), (long)tmp.data_size);
 		}
 		CUnsignedBuffer& operator=(CUnsignedBuffer const& tmp)
 		{
 			_init();
-			SetData(tmp.data(), tmp.data_size);
+			SetData(tmp.data(), (long)tmp.data_size);
 			return *this;
 		}
 		~CUnsignedBuffer()
@@ -204,13 +204,13 @@ namespace ns_my_std
 		{
 			if (!reserve(data_size + len))return false;
 			memmove(p + data_size, data, len);
-			setSize(data_size + len);
+			setSize((long)data_size + len);
 			return true;
 		}
 		bool SetData(char const* sz)
 		{
 			setSize(0);
-			return AddData((void*)sz, strlen(sz));
+			return AddData((void*)sz, (long)strlen(sz));
 		}
 		bool SetData(unsigned char const* sz, long len)
 		{

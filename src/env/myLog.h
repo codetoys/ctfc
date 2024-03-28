@@ -58,42 +58,24 @@ namespace ns_my_std
 			string m__file;
 			long m__line;
 			string m__func;
-			_ThreadSpec() :m_thread_id(0), m_bOutputThis(true), m__line(0) {}
+			_ThreadSpec() :m_thread_id(-1), m_bOutputThis(true), m__line(0) {}
 		};
-		static void _CloseThreadSpec(void * _p)
-		{
-			_ThreadSpec * p=(_ThreadSpec *)_p;
-			delete p;
-		}
 		_ThreadSpec * _getThreadSpec()
 		{
-			_ThreadSpec * p = (_ThreadSpec *)pthread_getspecific(tsd_key);
-			if (p)return p;
-			else
+			thread_local _ThreadSpec threadSepc;
+			if (threadSepc.m_thread_id<0)
 			{
-				p = new _ThreadSpec;
-				if (!p)
-				{
-					throw "new _ThreadSpec return NULL";
-				}
-				m_mutex.lock();
-				p->m_thread_id = m_thread_count;
+				m_mutex.WLock();
+				threadSepc.m_thread_id = m_thread_count;
 				++m_thread_count;
-				m_mutex.unlock();
-				if (0 == pthread_setspecific(tsd_key, p))
-				{
-					return p;
-				}
-				else
-				{
-					throw "pthread_setspecific error";
-				}
+				m_mutex.WUnLock();
 			}
+			return &threadSepc;
 		}
 	private:
 		long m_thread_count;//线程计数
-		pthread_key_t tsd_key;//线程存储key	
-		CPThreadMutex m_mutex;
+		CAtomicRWMutex::mySEM _sem;
+		CAtomicRWMutex m_mutex;
 		string m_appname;//用来构造m_filename，用于定时切换文件，若未设置则直接使用m_filename
 		string m_filename;//当前的日志文件名
 		ofstream m_ofs;
@@ -117,8 +99,7 @@ namespace ns_my_std
 		Log()
 		{
 			m_thread_count = 0;
-			pthread_key_create(&tsd_key, _CloseThreadSpec);
-			m_mutex.init();
+			m_mutex.Create(&_sem);
 			SetSource("应用");
 			m_bOutput = true;
 			m_bCache = false;
@@ -252,7 +233,7 @@ namespace ns_my_std
 		long tellEndP()
 		{
 			m_ofs.seekp(0, ios::end);
-			return m_ofs.tellp();
+			return (long)m_ofs.tellp();
 		}
 		//返回当前日志记录数
 		long getCountN()

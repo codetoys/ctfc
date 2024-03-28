@@ -1,4 +1,4 @@
-//CommandSet.h 命令集接口
+﻿//CommandSet.h 命令集接口
 //
 // Copyright (c) ct  All rights reserved.
 // 版权所有 ct 保留所有权利
@@ -6,7 +6,11 @@
 
 #pragma once
 
+#ifdef _WINDOWS
+#define isatty _isatty
+#else
 #include <termios.h>
+#endif
 #include "../function/htmldoc.h"
 #include "myUtil.h"
 

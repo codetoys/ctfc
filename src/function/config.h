@@ -9,9 +9,15 @@
 // choose target compiler: _MS_VC | _SUN_CC | _HP_ACC | _LINUX_CC
 
 //系统头文件
+#ifdef _WINDOWS
+#include <io.h>
+#define access _access
+#define F_OK 0
+#else
 #include <pthread.h>
-#include <fcntl.h>
 #include <unistd.h>
+#endif
+#include <fcntl.h>
 
 //C头文件<c*>==<*.h>
 #include <cerrno>
@@ -83,6 +89,18 @@ inline ostream& operator<<(ostream& os, const string& tmp)
 #define strnicmp(x,y,n) strncasecmp(x,y,n)
 #endif
 
+#ifdef _WINDOWS
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#define STDIN_FILENO _fileno(stdin)
+#define popen _popen
+#define pclose _pclose
+#include <direct.h>
+#include <process.h>
+#define getpid _getpid
+#define getcwd _getcwd
+#else
+#endif
 
 //HP机内存问题，替换掉标准的vector
 #define CMyVector vector

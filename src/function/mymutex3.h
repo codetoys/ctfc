@@ -1,4 +1,4 @@
-//mymutex3.h
+﻿//mymutex3.h
 //
 // Copyright (c) ct  All rights reserved.
 // 版权所有 ct 保留所有权利
@@ -145,7 +145,7 @@ namespace ns_my_std
 			string ret;
 			if (nullptr != sem_id)
 			{
-				sprintf(buf, "sem_id = %10ld , W %d R %d (%s), %s %s", (long)sem_id, count_WLock.load(), count_RLock.load()
+				sprintf(buf, "sem_id = %p , W %d R %d (%s), %s %s", sem_id, count_WLock.load(), count_RLock.load()
 					, (getThreadData()->isLocked() ? (getThreadData()->isWLocked() ? "W" : "R") : "-")
 					, (isSafe ? "safe" : ""), (isIngore ? " , ingored" : ""));
 				ret += buf;

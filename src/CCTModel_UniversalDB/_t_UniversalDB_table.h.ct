@@ -1,0 +1,314 @@
+//_cc_C${SYS}_${table}.h 自动生成的代码
+//
+// Copyright (c) ct  All rights reserved.
+// 版权所有 ct 保留所有权利
+//
+
+//警告：本文件由CT系统自动生成，不可手工修改
+
+#ifndef C${SYS}_${table}_H
+#define C${SYS}_${table}_H
+
+#include "../../function/htmldoc.h"
+
+#ifdef CTFC_${SYS}_H_SHM_DB
+#include "../../shmdb/shm_DB.h"
+#define CTFC_${SYS}_H_WITH_DB
+#endif
+
+#ifdef CTFC_${SYS}_H_MARIA_DB
+#include "../../MariaDB/MariaDB.h"
+#define CTFC_${SYS}_H_WITH_DB
+#endif
+
+using namespace ns_my_std;
+
+namespace ${NAMESPACE}
+{
+
+	//${table} ${table.comment}
+	class C${SYS}_${table}
+	{
+	private:
+#ifdef CTFC_${SYS}_H_SHM_DB
+		typedef CShmDB T_DB;
+#endif
+
+#ifdef CTFC_${SYS}_H_MARIA_DB
+		typedef CMariaDB T_DB;
+#endif
+
+#ifdef CTFC_${SYS}_H_WITH_DB
+		T_DB * pDB;
+#endif
+	public:
+#ifdef CTFC_${SYS}_H_WITH_DB
+		void Init(T_DB * _pDB){ pDB = _pDB ;}
+#endif
+		//主数据结构
+		struct T_DATA
+		{
+			//成员
+			<%foreach M in table.members%>
+			${M.type} ${M.name};//${M.comment} 默认值 ${M.default}
+			<%endforeach%>
+		
+			//toString
+			string & toString(string & str)const
+			{
+				stringstream s;
+				<%foreach M in table.members%>
+				s<<"${M.name}["<<${M}<<"]";
+				<%endforeach%>
+				return str = s.str();
+			}
+			//AddTableColumns
+			static bool AddTableColumns(CHtmlDoc::CHtmlTable2 & table)
+			{
+				<%foreach M in table.members%>
+				table.AddCol_db("${M.name}", ${M.HtmlType}, ${M.DBType}, "${M.comment}", "${M.show_type}");
+				<%endforeach%>
+				return true;
+			}
+			//AddTableData
+			bool AddTableData(CHtmlDoc::CHtmlTable2 & table)const
+			{
+				<%foreach M in table.members%>
+				table.AddData(${M});
+				<%endforeach%>
+				return true;
+			}
+		};//子类型结束
+		<%foreach G in table.groups%>
+			<%dim i="0"%>
+		//列组${G}的成员名称 ${G.comment}
+		char const * GetGroup${G}ColName(long i)const
+		{
+			switch(i)
+			{
+			<%foreach M in G.members%>
+			case ${i++}: return "${M}";
+			<%endforeach%>
+			default : return "";
+			}
+		}
+		<%endforeach%>
+		//CHtmlDoc::CHtmlTable2
+		class CHtmlTable : public CHtmlDoc::CHtmlTable2
+		{
+		public:
+			<%foreach M in table.members%>
+			string Get${M}(long i)const{return GetData(i, "${M}");}
+			<%endforeach%>
+			<%foreach M in table.members%>
+			long GetColIndex${M}()const{return GetColIndex("${M}");}
+			<%endforeach%>
+			void ToStruct(long i, T_DATA & data)const
+			{
+				<%foreach M in table.members%>
+				data.${M} = CTools::to_${M.type}(GetData(i, "${M}"));
+				<%endforeach%>
+			}
+		};
+#ifdef CTFC_${SYS}_H_WITH_DB
+		//创建表
+		bool CreateTable()
+		{
+			bool ret = true;
+			
+			CColumnDefines cols;
+
+			<%foreach M in table.members%>
+			cols.push_back("${M.name}", ${M.DBType}, "${M.comment}", "${M.show_type}");
+			<%endforeach%>
+
+			pDB->DropTable("${table}");
+			if (!pDB->CreateTable("${table}", "${table.comment}", cols, "${table.PK_cols}"))
+			{
+				thelog << "创建表${table}失败" << ende;
+				ret = false;
+			}
+			else thelog << "创建表${table}成功" << endi;
+
+			<%foreach I in table.indexs%>
+			if (!pDB->CreateIndex("${table}", "${I}", ${I.unique}, "${I.members}", "${I.comment}"))
+			{
+				thelog << "创建索引${I}失败" << ende;
+				ret = false;
+			}
+			else thelog << "创建索引${I}成功" << endi;
+			<%endforeach%>
+
+			return ret;
+		}
+
+		//显示
+		bool Show()
+		{
+			return pDB->FindByIndex("${table}", "PK");
+		}
+#endif
+		//数据操作
+		<%foreach S in table.dmls%>
+		<%if S.type equal "insert"%>
+		//构造SQL语句 ${S} ${S.comment}
+		string & sql${S}(<%foreach M in S.op_members ,%> ${M.ParamType} _${M} <%endforeach%> ,string & sql)
+		{
+			<%foreach M in table.members%>
+			${M.type} ${M} = ${M.default};
+			<%endforeach%>
+
+			<%foreach M in S.op_members%>
+			${M} = _${M};
+			<%endforeach%>
+
+			char buf[2048];
+			sprintf(buf, "insert into ${table}(<%foreach M in table.members ,%>${M}<%endforeach%>)"
+				" values(<%foreach M in table.members ,%>'${M.PrintfType}'<%endforeach%>)"
+				,<%foreach M in table.members ,%> ${M.ParamValue}<%endforeach%>);
+
+			return sql = buf;
+		}
+#ifdef CTFC_${SYS}_H_WITH_DB
+		//直连执行 ${S} ${S.comment}
+		bool ${S}(<%foreach M in S.op_members ,%> ${M.ParamType} _${M} <%endforeach%>, long & effectRows)
+		{
+			string sql;
+			sql${S}(<%foreach M in S.op_members ,%> _${M}<%endforeach%> , sql);
+			if (!pDB->RunSql(sql.c_str(), &effectRows) || 1 != effectRows)
+			{
+				thelog << "${S} ${S.comment} 执行失败 [" << sql << "] 影响的行数 " << effectRows << ende;
+				return false;
+			}
+			
+			return true;
+		}
+#endif
+		<%endif%>
+		<%if S.type equal "select"%>
+		//构造SQL语句 ${S} ${S.comment}
+		string & sql${S}(<%foreach M in S.where_members%> ${M.ParamType} _${M} ,<%endforeach%> string & sql)
+		{
+			char buf[2048];
+			sprintf(buf, "select <%foreach M in S.op_members ,%>${M}<%endforeach%> from ${table}"
+				<%if S.hasWhere exist%>
+					" where "
+					<%if S.where_members exist%>
+					" <%foreach M in S.where_members and%> ${M}='${M.PrintfType}' <%endforeach%>"
+					<%endif%>
+					<%if S.other_where exist%>
+					<%if S.where_members exist%>" and "<%endif%>"${S.other_where}"
+					<%endif%>
+					<%if S.where_members exist%>
+					<%foreach M in S.where_members%>, _${M} <%endforeach%>
+					<%endif%>
+				<%endif%>
+				);
+
+			return sql = buf;
+		}
+#ifdef CTFC_${SYS}_H_WITH_DB
+		//直连执行 ${S} ${S.comment}
+		bool ${S}(<%foreach M in S.where_members%> ${M.ParamType} _${M}, <%endforeach%>CHtmlTable * pTable, bool AddLineIfNoData = false)
+		{
+			string sql;
+			long effectRows;
+			sql${S}(<%foreach M in S.where_members%> _${M},<%endforeach%> sql);
+			if (!pDB->RunSql(sql.c_str(), &effectRows, pTable, AddLineIfNoData))
+			{
+				thelog << "${S} ${S.comment} 执行失败 [" << sql << "]" << ende;
+				return false;
+			}
+			
+			return true;
+		}
+#endif
+		<%endif%>
+		<%if S.type equal "update"%>
+		//构造SQL语句 ${S} ${S.comment}
+		string & sql${S}(<%foreach M in S.where_members%> ${M.ParamType} __${M.ParamName} ,<%endforeach%>
+			<%foreach M in S.op_members%> ${M.ParamType} _${M.ParamName} ,<%endforeach%> string & sql)
+		{
+			char buf[2048];
+			string fmr = (string)"update ${table} set <%foreach M in S.op_members ,%>${M.GetName}='${M.PrintfType}'<%endforeach%> "
+				<%if S.hasWhere exist%>
+					" where "
+					<%if S.where_members exist%>
+					" <%foreach M in S.where_members and%> ${M}='${M.PrintfType}' <%endforeach%>"
+					<%endif%>
+					<%if S.other_where exist%>
+					<%if S.where_members exist%>" and "<%endif%>"${S.other_where}"
+					<%endif%>
+				<%endif%>
+				;
+			sprintf(buf, fmr.c_str()				
+				<%foreach M in S.op_members%>, _${M}<%endforeach%>
+				<%if S.where_members exist%>
+				<%foreach M in S.where_members%>, __${M} <%endforeach%>
+				<%endif%>
+				);
+
+			return sql = buf;
+		}
+#ifdef CTFC_${SYS}_H_WITH_DB
+		//直连执行 ${S} ${S.comment}
+		bool ${S}(<%foreach M in S.where_members%> ${M.ParamType} __${M.ParamName}, <%endforeach%>
+			<%foreach M in S.op_members%> ${M.ParamType} _${M.ParamName}, <%endforeach%> long & effectRows)
+		{
+			string sql;
+			sql${S}(<%foreach M in S.where_members%> ${M.GroupIndexVar}__${M},<%endforeach%><%foreach M in S.op_members%>${M.GroupIndexVar} _${M},<%endforeach%> sql);
+			if (!pDB->RunSql(sql.c_str(), &effectRows))
+			{
+				thelog << "${S} ${S.comment} 执行失败 [" << sql << "]" << ende;
+				return false;
+			}
+			
+			return true;
+		}
+#endif
+		<%endif%>
+		<%if S.type equal "delete"%>
+		//构造SQL语句 ${S} ${S.comment}
+		string & sql${S}(<%foreach M in S.where_members%> ${M.ParamType} _${M} ,<%endforeach%> string & sql)
+		{
+			char buf[2048];
+			sprintf(buf, "delete from ${table}"
+				<%if S.hasWhere exist%>
+					" where "
+					<%if S.where_members exist%>
+					" <%foreach M in S.where_members and%> ${M}='${M.PrintfType}' <%endforeach%>"
+					<%endif%>
+					<%if S.other_where exist%>
+					<%if S.where_members exist%>" and "<%endif%>"${S.other_where}"
+					<%endif%>
+				<%endif%>
+				<%if S.where_members exist%>
+				<%foreach M in S.where_members%>, _${M} <%endforeach%>
+				<%endif%>
+				);
+
+			return sql = buf;
+		}
+#ifdef CTFC_${SYS}_H_WITH_DB
+		//直连执行 ${S} ${S.comment}
+		bool ${S}(<%foreach M in S.where_members ,%> ${M.ParamType} _${M} <%endforeach%>)
+		{
+			string sql;
+			long effectRows;
+			sql${S}(<%foreach M in S.where_members%> _${M},<%endforeach%> sql);
+			if (!pDB->RunSql(sql.c_str(), &effectRows))
+			{
+				thelog << "${S} ${S.comment} 执行失败 [" << sql << "]" << ende;
+				return false;
+			}
+			
+			return true;
+		}
+#endif
+		<%endif%>
+		<%endforeach%>
+
+	};//类结束
+}
+#endif
+

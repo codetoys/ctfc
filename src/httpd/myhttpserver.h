@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) ct  All rights reserved.
 // 版权所有 ct 保留所有权利
 //
@@ -124,7 +124,6 @@ namespace ns_my_std
 				table.AddCol("名称",CHtmlDoc::CHtmlDoc_DATACLASS_TEXT);
 				table.AddCol("隐藏",CHtmlDoc::CHtmlDoc_DATACLASS_TEXT);
 				table.AddCol("标准",CHtmlDoc::CHtmlDoc_DATACLASS_TEXT);
-				table.AddCol("类型",CHtmlDoc::CHtmlDoc_DATACLASS_RIGHT);
 				table.AddCol("队列",CHtmlDoc::CHtmlDoc_DATACLASS_RIGHT);
 			}
 
@@ -151,8 +150,6 @@ namespace ns_my_std
 						table.AddData(p->command_id + ".asp");
 						table.AddData(p->notonhomepage ? "主页隐藏" : "");
 						table.AddData(p->NotStdPage ? "自定义" : "");
-						if (0 == p->getType()) table.AddData("");
-						else table.AddData(p->getType());
 						if (p->queue < 0) table.AddData("");
 						else table.AddData(p->queue);
 					}
@@ -642,7 +639,6 @@ namespace ns_my_std
 			for (it = m_commands.begin(); it != m_commands.end(); ++it)
 			{
 				m_pServerDatas->m_web_command_data_s[it->second.seq].command_id = it->second.pWebCommand->command_id;
-				m_pServerDatas->m_web_command_data_s[it->second.seq].WebCommandType = it->second.pWebCommand->getType();
 			}
 
 			if(!CCurrentProcess::MultiProcessMode())

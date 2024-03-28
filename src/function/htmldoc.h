@@ -1,4 +1,4 @@
-//htmldoc.h HTML功能类
+﻿//htmldoc.h HTML功能类
 //
 // Copyright (c) ct  All rights reserved.
 // 版权所有 ct 保留所有权利
@@ -8,6 +8,7 @@
 
 #include "../env/env.h"
 #include <ctype.h>
+#include "config.h"
 #include "ColumnData.h"
 #include "IDataSource.h"
 
@@ -344,8 +345,8 @@ namespace ns_my_std
 					if (i + 2 < str.size())
 					{
 						char c = '\0';
-						c += hexchartolong(str[i + 1]) * 16;
-						c += hexchartolong(str[i + 2]);
+						c += (char)hexchartolong(str[i + 1]) * 16;
+						c += (char)hexchartolong(str[i + 2]);
 						ret += c;
 						i += 3;
 						continue;
@@ -662,11 +663,11 @@ namespace ns_my_std
 				size_t j;
 				for (j = 0; j < m_heads.cells.size(); ++j)
 				{
-					if (GetColName(j) == col_name)return j;
+					if (GetColName((long)j) == col_name)return (long)j;
 				}
 				return -1;
 			}
-			virtual long IDS_GetColCount()const { return GetColCount(); }
+			virtual long IDS_GetColCount()const { return (long)GetColCount(); }
 			virtual long IDS_GetColIndex(char const* col_name)const 
 			{
 				return GetColIndex(col_name);
@@ -686,12 +687,12 @@ namespace ns_my_std
 			virtual bool IDS_MoveNext() { ++m_current_line; return !IDS_isEnd(); }
 			virtual bool IDS_Move(long id) { m_current_line = id; return !IDS_isEnd(); }
 			virtual bool IDS_isEnd()const { return m_current_line < 0 || m_current_line >= m_bodys.size(); }
-			virtual long IDS_GetCurrentID()const {return m_current_line;}
+			virtual long IDS_GetCurrentID()const {return (long)m_current_line;}
 
-			virtual string IDS_GetCurrentData(long col)const { return IDS_GetDataByID(m_current_line, col); }
+			virtual string IDS_GetCurrentData(long col)const { return IDS_GetDataByID((long)m_current_line, col); }
 			//获取行onclick（HTML）
-			virtual string IDS_GetCurrent_OnClick()const{return IDS_GetOnClickByID(m_current_line);}
-			virtual string IDS_GetCurrentDataToShow(long col)const { return IDS_GetDataToShowByID(m_current_line,col); }
+			virtual string IDS_GetCurrent_OnClick()const{return IDS_GetOnClickByID((long)m_current_line);}
+			virtual string IDS_GetCurrentDataToShow(long col)const { return IDS_GetDataToShowByID((long)m_current_line,col); }
 			virtual string IDS_OutputCurrentRecord()const { return OutputRecord(m_current_line); }
 			virtual string IDS_GetDataByID(long id, long col)const { return GetData(id, col); }
 			virtual string IDS_GetOnClickByID(long _id)const 
@@ -724,7 +725,7 @@ namespace ns_my_std
 
 				for (size_t i = 0; i < m_bodys[line].cells.size(); ++i)
 				{
-					ss << "[" << this->GetColName(i) << "](" << m_bodys[line].cells[i].value << ") ";
+					ss << "[" << this->GetColName((long)i) << "](" << m_bodys[line].cells[i].value << ") ";
 				}
 
 				return ss.str();
@@ -742,7 +743,7 @@ namespace ns_my_std
 				size_t j;
 				for (j = 0; j < m_heads.cells.size(); ++j)
 				{
-					if (GetColName(j) == col_name)return m_bodys[i].cells[j].value;
+					if (GetColName((long)j) == col_name)return m_bodys[i].cells[j].value;
 				}
 				return "";
 			}
@@ -753,7 +754,7 @@ namespace ns_my_std
 				{
 					if (col < m_bodys[i].cells.size() && m_bodys[i].cells[col].value == data)
 					{
-						return i;
+						return (long)i;
 					}
 				}
 				return -1;
@@ -813,7 +814,7 @@ namespace ns_my_std
 					th.isFormInput = true;
 					th.forminput = *pCommandParam;
 				}
-				return m_heads.cells.size() - 1;
+				return (long)m_heads.cells.size() - 1;
 			}
 			//设置列，增加列名前缀
 			void SetCol_AddPX(char const* px)
@@ -862,7 +863,7 @@ namespace ns_my_std
 				if (col>m_heads.cells.size())return false;
 				_thtd & th = m_heads.cells[col];
 				th.isFormInput = true;
-				th.forminput.SetFormatInput(GetColName(col).c_str(), GetColName(col).c_str(), size);
+				th.forminput.SetFormatInput(GetColName((long)col).c_str(), GetColName((long)col).c_str(), size);
 				th.hidden = _hidden;
 				return true;
 			}
@@ -876,7 +877,7 @@ namespace ns_my_std
 			long AddLine()
 			{
 				m_bodys.resize(m_bodys.size() + 1);
-				return m_bodys.size() - 1;
+				return (long)m_bodys.size() - 1;
 			}
 			//设置行onclick（HTML）
 			bool SetLine_OnClick(size_t line, char const* js)
@@ -903,7 +904,7 @@ namespace ns_my_std
 			void AddData(string const& data, bool CountToFoot = false, long span = 1)
 			{
 				if (0 == m_bodys.size())AddLine();
-				long line = m_bodys.size() - 1;
+				long line = (long)m_bodys.size() - 1;
 				
 				AddDataToLine(line, data, CountToFoot);
 			}
@@ -966,7 +967,7 @@ namespace ns_my_std
 			//填充缺失的格子，构造成完整表格
 			void Fill()
 			{
-				long cols = GetActualColCount();
+				long cols = (long)GetActualColCount();
 				m_heads.cells.resize(cols);
 				for (size_t i = 0; i < m_bodys.size(); ++i)
 				{
@@ -1006,7 +1007,7 @@ namespace ns_my_std
 					}
 					for (i = 0; i < m_heads.cells.size(); ++i)
 					{
-						id = MakeHeadID(0, i);
+						id = MakeHeadID(0, (long)i);
 						ret += m_heads.cells[i].toHtml(m_heads.cells[i].value, NULL, id, tmpstr, true);
 					}
 					if (this->m_isForm)
@@ -1036,7 +1037,7 @@ namespace ns_my_std
 
 					for (i = 0; i < m_bodys[j].cells.size(); ++i)
 					{
-						id = MakeBodyID(j, i);
+						id = MakeBodyID((long)j, (long)i);
 						if (i >= m_heads.cells.size())
 						{
 							_thtd tmp;
@@ -1095,7 +1096,7 @@ namespace ns_my_std
 					}
 					for (i = 0; i < m_foots.cells.size(); ++i)
 					{
-						id = MakeFootID(0, i);
+						id = MakeFootID(0, (long)i);
 						if (i >= m_heads.cells.size())
 						{
 							ret += m_foots.cells[i].toHtml(m_foots.cells[i].value, NULL, id, tmpstr, true);
@@ -1124,7 +1125,7 @@ namespace ns_my_std
 					else ret += "<FORM target=\"_blank\" method=\"POST\">\n";
 					for (i = 0; i < m_heads.cells.size(); ++i)
 					{
-						id = MakeFootID(m_bodys.size(), i);
+						id = MakeFootID((long)m_bodys.size(), (long)i);
 						m_heads.cells[i].forminput.isReadOnly = false;
 						if (m_heads.cells[i].isFormInput)ret += m_heads.cells[i].toHtml("", NULL, id, tmpstr, false);
 						else ret += "<TD></TD>\n";
@@ -1154,7 +1155,7 @@ namespace ns_my_std
 						{
 							if (m_heads.cells[i].value == oldtable->m_heads.cells[i].value)continue;//相同，不用生成脚本
 						}
-						id = MakeHeadID(0, i);
+						id = MakeHeadID(0, (long)i);
 						ret += UpdateScript(id, m_heads.cells[i].toHtml(m_heads.cells[i].value, NULL, id, tmpstr, true));
 					}
 				}
@@ -1166,7 +1167,7 @@ namespace ns_my_std
 						{
 							if (m_foots.cells[i].value == oldtable->m_foots.cells[i].value)continue;//相同，不用生成脚本
 						}
-						id = MakeFootID(0, i);
+						id = MakeFootID(0, (long)i);
 						ret += UpdateScript(id, m_foots.cells[i].toHtml(m_foots.cells[i].value, NULL, id, tmpstr, true));
 					}
 				}
@@ -1178,7 +1179,7 @@ namespace ns_my_std
 						{
 							if (m_bodys[j].cells[i].value == oldtable->m_bodys[j].cells[i].value)continue;//相同，不用生成脚本
 						}
-						id = MakeBodyID(j, i);
+						id = MakeBodyID((long)j, (long)i);
 						if (i >= m_heads.cells.size())
 						{
 							_thtd tmp;

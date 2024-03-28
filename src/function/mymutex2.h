@@ -1,4 +1,4 @@
-//mymutex2.h
+﻿//mymutex2.h
 //
 // Copyright (c) ct  All rights reserved.
 // 版权所有 ct 保留所有权利
@@ -14,7 +14,7 @@
 namespace ns_my_std
 {
 	//对象实例不可复制不可移动，内部记录进程操作状态和线程操作状态
-	class CMyRWMutex2
+	class CAtomicRWMutex
 	{
 	public:
 		struct mySEM
@@ -152,18 +152,18 @@ namespace ns_my_std
 	public:
 		thread_data* getThreadData()const
 		{
-			thread_local map<CMyRWMutex2 const*, thread_data > d;//通过对象地址区分不同的对象
+			thread_local map<CAtomicRWMutex const*, thread_data > d;//通过对象地址区分不同的对象
 			return &d[this];
 		}
 
 		//禁止移动和复制（不能用于vector，因为vector会移动对象）
-		CMyRWMutex2() = default;
-		CMyRWMutex2(CMyRWMutex2 const&) = delete;
-		CMyRWMutex2& operator =(CMyRWMutex2 const&) = delete;
-		CMyRWMutex2(CMyRWMutex2 const&&) = delete;
-		CMyRWMutex2& operator =(CMyRWMutex2 const&&) = delete;
+		CAtomicRWMutex() = default;
+		CAtomicRWMutex(CAtomicRWMutex const&) = delete;
+		CAtomicRWMutex& operator =(CAtomicRWMutex const&) = delete;
+		CAtomicRWMutex(CAtomicRWMutex const&&) = delete;
+		CAtomicRWMutex& operator =(CAtomicRWMutex const&&) = delete;
 
-		~CMyRWMutex2()
+		~CAtomicRWMutex()
 		{
 			if (0 != count_WLock || 0 != count_RLock)
 			{
@@ -204,7 +204,7 @@ namespace ns_my_std
 			string ret;
 			if (nullptr != sem_id)
 			{
-				sprintf(buf, "sem_id = %10ld , W %d R %d (%s), %s %s", (long)sem_id, count_WLock.load(), count_RLock.load()
+				sprintf(buf, "sem_id = %p , W %d R %d (%s), %s %s", sem_id, count_WLock.load(), count_RLock.load()
 					, (getThreadData()->isLocked() ? (getThreadData()->isWLocked() ? "W" : "R") : "-")
 					, (isSafe ? "safe" : ""), (isIngore ? " , ingored" : ""));
 				ret += buf;

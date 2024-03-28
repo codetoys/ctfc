@@ -1,0 +1,103 @@
+//_cc_C${SYS}_${sequence}.h 自动生成的代码
+//
+// Copyright (c) ct  All rights reserved.
+// 版权所有 ct 保留所有权利
+//
+
+//警告：本文件由CT系统自动生成，不可手工修改
+
+#ifndef C${SYS}_${sequence}_H
+#define C${SYS}_${sequence}_H
+
+#include "../../function/htmldoc.h"
+
+#ifdef CTFC_${SYS}_H_SHM_DB
+#include "../../shmdb/shm_DB.h"
+#define CTFC_${SYS}_H_WITH_DB
+#endif
+
+#ifdef CTFC_${SYS}_H_MARIA_DB
+#include "../../MariaDB/MariaDB.h"
+#define CTFC_${SYS}_H_WITH_DB
+#endif
+
+using namespace ns_my_std;
+
+namespace ${NAMESPACE}
+{
+
+	//${sequence} ${sequence.comment}
+	class C${SYS}_${sequence}
+	{
+	private:
+#ifdef CTFC_${SYS}_H_SHM_DB
+		typedef CShmDB T_DB;
+#endif
+
+#ifdef CTFC_${SYS}_H_MARIA_DB
+		typedef CMariaDB T_DB;
+#endif
+
+#ifdef CTFC_${SYS}_H_WITH_DB
+		T_DB * pDB;
+#endif
+	public:
+#ifdef CTFC_${SYS}_H_WITH_DB
+		void Init(T_DB * _pDB){ pDB = _pDB ;}
+		bool CreateSequence()
+		{
+			bool ret = true;
+			
+			if (!pDB->ResetSequence("${sequence}", atol("${sequence.init}")))
+			{
+				thelog << "创建序列${sequence}失败" << ende;
+				ret = false;
+			}
+			thelog << "创建序列${sequence}成功" << endi;
+
+			return ret;
+		}
+		//显示
+		long GetSequenceValue()
+		{
+			return pDB->GetSequenceValue("${sequence}");
+		}
+#endif
+		//获得下一个值
+		string & sqlGetNext(string & sql)
+		{
+			return sql = "sequence ${sequence} NEXT";
+		}
+#ifdef CTFC_${SYS}_H_WITH_DB
+		//直连执行
+		bool GetNext(long & ret)
+		{
+			string sql;
+			long effectRows;
+			CHtmlDoc::CHtmlTable2 table;
+			
+			sqlGetNext(sql);
+			if (!pDB->RunSql(sql.c_str(), &effectRows, &table))
+			{
+				thelog << "GetNext 执行失败 [" << sql << "]" << ende;
+				return false;
+			}
+			if(1 != table.GetRecordCount())
+			{
+				thelog << "返回行数不是1" << ende;
+				return false;
+			}
+			if(1 != table.GetColCount())
+			{
+				thelog << "返回列数不是1" << ende;
+				return false;
+			}
+
+			ret = atol(table.GetData(0,0L).c_str());
+			return true;
+		}
+#endif
+	};//类结束
+}
+#endif
+

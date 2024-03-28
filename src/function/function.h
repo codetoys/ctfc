@@ -29,18 +29,17 @@ class CEasyFile 简单文件读写，基于完整内容读写
 #include "BitSet.h"
 #include "Buffer.h"
 #include "sstring.h"
+#ifdef _WINDOWS
+#include <winsock.h> //这个里面有timeval
+#else
 #include <sys/time.h>
+#define localtime_s(a,b) localtime_r((b),(a))
+#endif
 
 #define sstring IShmActiveObject_sstring
 
 namespace ns_my_std
 {
-	class CSystemParam
-	{
-	public:
-		static char const* SystemParam_GetString(char const*, char const*, char const* defaultvalue) { return defaultvalue; }
-		static long SystemParam_GetLong(char const*, char const*, long defaultvalue) { return defaultvalue; }
-	};
 	//这个类是一个占位符，用于分析内存时快速发现
 	class ____
 	{
@@ -111,10 +110,11 @@ namespace ns_my_std
 		//年月日时分秒
 		static string TimeToTimeString(time_t const& t1)
 		{
-			tm const* t2;
+			tm _t2;
+			tm* t2 = &_t2;
 			char buf[256];
-			t2 = localtime(&t1);
-			sprintf(buf, "%04d%02d%02d%02d%02d%02d", t2->tm_year + 1900, t2->tm_mon + 1, t2->tm_mday, t2->tm_hour, t2->tm_min, t2->tm_sec);
+			localtime_s(t2, &t1);
+			sprintf_s(buf, 256, "%04d%02d%02d%02d%02d%02d", t2->tm_year + 1900, t2->tm_mon + 1, t2->tm_mday, t2->tm_hour, t2->tm_min, t2->tm_sec);
 			return buf;
 		}
 		//日志用格式
@@ -122,10 +122,11 @@ namespace ns_my_std
 		{
 			if (0 == t1)return "";
 
-			tm const * t2;
+			tm _t2;
+			tm* t2 = &_t2;
 			char buf[256];
-			t2 = localtime(&t1);
-			sprintf(buf, "%02d-%02d %02d:%02d:%02d", t2->tm_mon + 1, t2->tm_mday, t2->tm_hour, t2->tm_min, t2->tm_sec);
+			localtime_s(t2, &t1);
+			sprintf_s(buf, 256, "%02d-%02d %02d:%02d:%02d", t2->tm_mon + 1, t2->tm_mday, t2->tm_hour, t2->tm_min, t2->tm_sec);
 			return buf;
 		}
 		//年月日
@@ -133,10 +134,11 @@ namespace ns_my_std
 		{
 			if (0 == t1)return "";
 
-			tm const * t2;
+			tm _t2;
+			tm* t2 = &_t2;
 			char buf[256];
-			t2 = localtime(&t1);
-			sprintf(buf, "%04d%02d%02d", t2->tm_year + 1900, t2->tm_mon + 1, t2->tm_mday);
+			localtime_s(t2, &t1);
+			sprintf_s(buf, 256, "%04d%02d%02d", t2->tm_year + 1900, t2->tm_mon + 1, t2->tm_mday);
 			return buf;
 		}
 		//年月日 时分秒
@@ -144,10 +146,11 @@ namespace ns_my_std
 		{
 			if (0 == t1)return "";
 
-			tm const * t2;
+			tm _t2;
+			tm* t2 = &_t2;
 			char buf[256];
-			t2 = localtime(&t1);
-			sprintf(buf, "%04d%02d%02d %02d%02d%02d", t2->tm_year + 1900, t2->tm_mon + 1, t2->tm_mday, t2->tm_hour, t2->tm_min, t2->tm_sec);
+			localtime_s(t2, &t1);
+			sprintf_s(buf, 256, "%04d%02d%02d %02d%02d%02d", t2->tm_year + 1900, t2->tm_mon + 1, t2->tm_mday, t2->tm_hour, t2->tm_min, t2->tm_sec);
 			return buf;
 		}
 		static char * mystrncpy(char * buf, char const * source, long bufsize)
@@ -171,7 +174,7 @@ namespace ns_my_std
 			char buf[256];
 			string ret;
 			int len;
-			if (-1 == (len = sprintf(buf, "%ld", n)))return "";
+			if (-1 == (len = sprintf_s(buf, 256, "%ld", n)))return "";
 			for (int i = 0; i < len; ++i)
 			{
 				ret += buf[i];
@@ -195,7 +198,7 @@ namespace ns_my_std
 		static string & ToString(long data, string & ret)
 		{
 			char buf[256];
-			sprintf(buf, "%ld", data);
+			sprintf_s(buf, 256, "%ld", data);
 			return ret = buf;
 		}
 		//数据类型转字符串
@@ -211,7 +214,7 @@ namespace ns_my_std
 		static string ToString(long data)
 		{
 			char buf[256];
-			sprintf(buf, "%ld", data);
+			sprintf_s(buf, 256, "%ld", data);
 			return buf;
 		}
 		static long to_long(string const & data)
@@ -229,7 +232,7 @@ namespace ns_my_std
 		static string to_string(long data)
 		{
 			char buf[256];
-			sprintf(buf, "%ld", data);
+			sprintf_s(buf, 256, "%ld", data);
 			return buf;
 		}
 		template<long N>
@@ -271,7 +274,7 @@ namespace ns_my_std
 		}
 		static string ToHex(string const& data)
 		{
-			return ToHex(data.c_str(), data.size());
+			return ToHex(data.c_str(), (int)data.size());
 		}
 		static string ToHex(char const* data, int len)
 		{
@@ -279,7 +282,7 @@ namespace ns_my_std
 			for (int i = 0; i < len; ++i)
 			{
 				char buf[16];
-				sprintf(buf, "%02X", (unsigned char)data[i]);
+				sprintf_s(buf, 16, "%02X", (unsigned char)data[i]);
 				ret += buf;
 			}
 			return ret;
@@ -374,11 +377,11 @@ namespace ns_my_std
 		}
 		static short& assign(short& a, string const& b)
 		{
-			return a = atol(b.c_str());
+			return a = (short)atol(b.c_str());
 		}
 		static char& assign(char& a, string const& b)
 		{
-			return a = atol(b.c_str());
+			return a = (char)atol(b.c_str());
 		}
 		static unsigned long& assign(unsigned long& a, string const& b)
 		{
@@ -390,11 +393,11 @@ namespace ns_my_std
 		}
 		static unsigned short& assign(unsigned short& a, string const& b)
 		{
-			return a = strtoul(b.c_str(), nullptr, 0);
+			return a = (unsigned short)strtoul(b.c_str(), nullptr, 0);
 		}
 		static unsigned char& assign(unsigned char& a, string const& b)
 		{
-			return a = strtoul(b.c_str(), nullptr, 0);
+			return a = (unsigned char)strtoul(b.c_str(), nullptr, 0);
 		}
 	};
 
@@ -604,7 +607,7 @@ namespace ns_my_std
 		{
 			if (0 != access(filename, F_OK))
 			{
-				m_msg = "删除错误";
+				m_msg = "access错误";
 				return false;
 			}
 			return true;
@@ -659,7 +662,7 @@ namespace ns_my_std
 				fclose(file);
 				return false;
 			}
-			filedata.setSize(size);
+			filedata.setSize((long)size);
 			if (0 != fclose(file))
 			{
 				m_msg = "关闭文件错误错误";
@@ -693,16 +696,16 @@ namespace ns_my_std
 		bool WriteFile(char const * filename, long filedata)
 		{
 			char buf[256];
-			sprintf(buf, "%ld", filedata);
+			sprintf_s(buf, 256, "%ld", filedata);
 			return WriteFile(filename, buf);
 		}
 		bool WriteFile(char const * filename, char const * filedata)
 		{
-			return WriteFile(filename, filedata, strlen(filedata));
+			return WriteFile(filename, filedata, (long)strlen(filedata));
 		}
 		bool WriteFile(char const* filename, char const* filedata, long datasize)
 		{
-			return WriteFile(filename, 0, filedata, strlen(filedata), true);
+			return WriteFile(filename, 0, filedata, (long)strlen(filedata), true);
 		}
 		bool WriteFile(char const* filename, long seek, char const* filedata, long datasize, bool trunc)
 		{
@@ -721,7 +724,7 @@ namespace ns_my_std
 			if (ftell(file) != seek)
 			{
 				char buf[256];
-				sprintf(buf, "定位错 %ld %ld", seek, ftell(file));
+				sprintf_s(buf, 256, "定位错 %ld %ld", seek, ftell(file));
 				m_msg = buf;
 				return false;
 			}
@@ -743,6 +746,33 @@ namespace ns_my_std
 	{
 	private:
 		timeval t;
+#ifdef _WINDOWS
+		int gettimeofday(struct timeval* tv, struct timezone* tz)const
+		{
+			// 定义FILETIME结构体
+			FILETIME ft;
+			// 获取当前系统时间
+			GetSystemTimeAsFileTime(&ft);
+
+			// 将FILETIME结构体中的时间值转换为64位整数，单位为100纳秒
+			ULARGE_INTEGER uliTime;
+			uliTime.LowPart = ft.dwLowDateTime;
+			uliTime.HighPart = ft.dwHighDateTime;
+			uint64_t ullTime = uliTime.QuadPart;
+
+			// 将时间值转换为自1970年1月1日00:00:00 UTC以来经过的微秒数
+			static const uint64_t EPOCH_DIFFERENCE = 116444736000000000ULL;
+			ullTime -= EPOCH_DIFFERENCE;
+			ullTime /= 10;
+
+			// 将时间值转换为struct timeval结构体
+			tv->tv_sec = (long)(ullTime / 1000000);
+			tv->tv_usec = ullTime % 1000000;
+
+			return 0;
+		}
+#endif
+
 	public:
 		CMyTime()
 		{

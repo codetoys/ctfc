@@ -1,12 +1,16 @@
-//
+﻿//
 // Copyright (c) ct  All rights reserved.
 // 版权所有 ct 保留所有权利
 //
 
 #include "myUtil.h"
+#ifdef _WINDOWS
+#include <signal.h>
+#else
 #include <sys/wait.h>
-#include <errno.h>
 #include <termios.h>
+#endif
+#include <errno.h>
 #include<sys/stat.h>
 
 namespace ns_my_std
@@ -216,15 +220,6 @@ namespace ns_my_std
 		
 		return true;
 	}
-	//fork进程的函数
-	pid_t ActiveFork()
-	{
-		pid_t pid = fork();
-		if (0 == pid)
-		{
-		}
-		return pid;
-	}
 	void ExitActiveApp(int exit_code) 
 	{
 		exit(exit_code); 
@@ -249,7 +244,7 @@ namespace ns_my_std
 		thelog<<"isDebug = "<<(pIsDebug?"true":"false")<<endl;
 		for(T_SINGLETONS::iterator it=mapSingleton.begin();it!=mapSingleton.end();++it)
 		{
-			thelog<<"classname = "<<it->first<<" ptr = "<<(long)it->second<<endl;
+			thelog << "classname = " << it->first << " ptr = " << it->second << endl;
 		}
 		thelog<<"CActiveAppEnv 状态报告结束"<<endi;
 	}
@@ -308,6 +303,8 @@ namespace ns_my_std
 		pclose(pf);
 		return ret;
 	}
+#ifdef _WINDOWS
+#else
 	string & ShowPS_pid(pid_t pid, string & ret)
 	{
 		ret = "";
@@ -328,7 +325,7 @@ namespace ns_my_std
 		pclose(pf);
 		return ret;
 	}
-
+#endif
 	bool GetCommandParam(int argc, char **argv,char const * key)
 	{
 		int i;
@@ -360,6 +357,8 @@ namespace ns_my_std
 		return false;
 	}
 
+#ifdef _WINDOWS
+#else
 	int myShellExecute(char const * cmd, char const * param)
 	{
 		string shellstr=cmd;
@@ -384,6 +383,7 @@ namespace ns_my_std
 
 		return ret;
 	}
+#endif
 	int GetShellOutput(char const * cmd, string & output)
 	{
 		char buf[1024];
@@ -449,30 +449,21 @@ namespace ns_my_std
 		switch(sig)
 		{
 		case SIGABRT    :    return "SIGABRT    进程调用abort函数，进程非正常退出";
+#ifdef _WINDOWS
+#else
 		case SIGALRM    :    return "SIGALRM    用alarm函数设置的timer超时或setitimer函数设置的interval timer超时";
 		case SIGBUS     :    return "SIGBUS     某种特定的硬件异常，通常由内存访问引起";
 		case SIGCHLD    :    return "SIGCHLD    子进程Terminate或Stop";
 		case SIGCONT    :    return "SIGCONT    从stop中恢复运行";
-#ifndef _LINUXOS
-		case SIGEMT     :    return "SIGEMT     和实现相关的硬件异常";
-#endif
-		case SIGFPE     :    return "SIGFPE     数学相关的异常，如被0除，浮点溢出，等等";
 		case SIGHUP     :    return "SIGHUP     终端断开";
-		case SIGILL     :    return "SIGILL     非法指令异常";
-			//case SIGINFO    :    return "SIGINFO    BSD signal。由Status Key产生，通常是CTRL+T。发送给所有Foreground Group的进程     ";
-		case SIGINT     :    return "SIGINT     由Interrupt Key产生，通常是CTRL+C或者DELETE";
 		case SIGIO      :    return "SIGIO      异步IO事件";
-			//case SIGIOT     :    return "SIGIOT     实现相关的硬件异常，一般对应SIGABRT                                              ";
 		case SIGKILL    :    return "SIGKILL    强制中止";
 		case SIGPIPE    :    return "SIGPIPE    在reader中止之后写Pipe的时候发送";
-			//case SIGPOLL    :    return "SIGPOLL    当某个事件发送给Pollable Device的时候发送                                        ";
 		case SIGPROF    :    return "SIGPROF    Setitimer指定的Profiling Interval Timer所产生";
 		case SIGPWR     :    return "SIGPWR     和系统相关。和UPS相关。";
 		case SIGQUIT    :    return "SIGQUIT    输入Quit Key（CTRL+\\）";
-		case SIGSEGV    :    return "SIGSEGV    非法内存访问";
 		case SIGSTOP    :    return "SIGSTOP    中止进程";
 		case SIGSYS     :    return "SIGSYS     非法系统调用";
-		case SIGTERM    :    return "SIGTERM    请求中止进程，kill命令缺省发送";
 		case SIGTRAP    :    return "SIGTRAP    实现相关的硬件异常。一般是调试异常";
 		case SIGTSTP    :    return "SIGTSTP    Suspend Key，一般是Ctrl+Z";
 		case SIGTTIN    :    return "SIGTTIN    当Background Group的进程尝试读取Terminal的时候发送";
@@ -484,6 +475,18 @@ namespace ns_my_std
 		case SIGWINCH   :    return "SIGWINCH   当Terminal的窗口大小改变的时候，发送给Foreground Group的所有进程";
 		case SIGXCPU    :    return "SIGXCPU    当CPU时间限制超时的时候";
 		case SIGXFSZ    :    return "SIGXFSZ    进程超过文件大小限制";
+#endif
+#ifndef _LINUXOS
+		//case SIGEMT     :    return "SIGEMT     和实现相关的硬件异常";这个linux和windows都不支持
+#endif
+		case SIGFPE     :    return "SIGFPE     数学相关的异常，如被0除，浮点溢出，等等";
+		case SIGILL     :    return "SIGILL     非法指令异常";
+			//case SIGINFO    :    return "SIGINFO    BSD signal。由Status Key产生，通常是CTRL+T。发送给所有Foreground Group的进程     ";
+		case SIGINT     :    return "SIGINT     由Interrupt Key产生，通常是CTRL+C或者DELETE";
+			//case SIGIOT     :    return "SIGIOT     实现相关的硬件异常，一般对应SIGABRT                                              ";
+			//case SIGPOLL    :    return "SIGPOLL    当某个事件发送给Pollable Device的时候发送                                        ";
+		case SIGSEGV    :    return "SIGSEGV    非法内存访问";
+		case SIGTERM    :    return "SIGTERM    请求中止进程，kill命令缺省发送";
 		default:			 return "未知的信号";
 		}
 	}
@@ -555,6 +558,8 @@ namespace ns_my_std
 		return true;
 	}
 
+#ifdef _WINDOWS
+#else
 	bool setEcho(int fd,bool option)
 	{
 		int err;
@@ -612,7 +617,7 @@ namespace ns_my_std
 		setEcho(STDIN_FILENO,true);
 		return ret;
 	}
-
+#endif
 	string to_db_style(string const & struct_style)
 	{
 		string db_style;
@@ -640,21 +645,23 @@ namespace ns_my_std
 
 	void SleepSeconds(long seconds)
 	{
-		//#ifdef _IBMOS
-		//	sleep(seconds * 1000);
-		//#else
+#ifdef _WINDOWS
+		Sleep(seconds * 1000);
+#else
 		sleep(seconds);
-		//#endif
+#endif
 	}
 	void SleepUSeconds(unsigned long useconds)
 	{
-		//#ifdef _IBMOS
-		//	sleep(seconds * 1000);
-		//#else
+#ifdef _WINDOWS
+		Sleep(useconds / 1000);
+#else
 		usleep(useconds);
-		//#endif
+#endif
 	}
 
+#ifdef _WINDOWS
+#else
 	//启动精灵进程，注意这个函数在两个驻留进程中分别执行，否则客户端不能看到启动日志
 	bool start_demon()
 	{
@@ -684,18 +691,17 @@ namespace ns_my_std
 		}
 		return true;
 	}
-
+#endif
 	int __all_sig_catch(int argc, char ** argv, int fun(int, char **))
 	{
 		signal(SIGABRT, sig_default);
+#ifdef _WINDOWS
+#else
 		signal(SIGALRM, sig_default);
 		signal(SIGBUS, sig_default);
 		signal(SIGCHLD, sig_default);
 		signal(SIGCONT, sig_default);
-		signal(SIGFPE, sig_default);
 		signal(SIGHUP, sig_default);
-		signal(SIGILL, sig_default);
-		//signal(SIGINT, sig_default);//ctrl-c
 		signal(SIGIO, sig_default);
 		signal(SIGIOT, sig_default);
 		signal(SIGKILL, sig_default);
@@ -704,10 +710,8 @@ namespace ns_my_std
 		signal(SIGPROF, sig_default);
 		signal(SIGPWR, sig_default);
 		signal(SIGQUIT, sig_default);
-		signal(SIGSEGV, sig_default);
 		signal(SIGSTOP, sig_default);
 		signal(SIGSYS, sig_default);
-		signal(SIGTERM, sig_default);
 		signal(SIGTRAP, sig_default);
 		signal(SIGTSTP, sig_default);
 		signal(SIGTTIN, sig_default);
@@ -719,6 +723,12 @@ namespace ns_my_std
 		signal(SIGWINCH, sig_default);
 		signal(SIGXCPU, sig_default);
 		signal(SIGXFSZ, sig_default);
+#endif
+		signal(SIGFPE, sig_default);
+		signal(SIGILL, sig_default);
+		//signal(SIGINT, sig_default);//ctrl-c
+		signal(SIGSEGV, sig_default);
+		signal(SIGTERM, sig_default);
 
 		int ret;
 		try

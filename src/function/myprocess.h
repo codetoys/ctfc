@@ -1,4 +1,4 @@
-//myprcoess.h 进程相关
+﻿//myprcoess.h 进程相关
 //
 // Copyright (c) ct  All rights reserved.
 // 版权所有 ct 保留所有权利
@@ -7,7 +7,10 @@
 #pragma once
 
 #include "config.h"
+#ifdef _WINDOWS
+#else
 #include <sys/wait.h>
+#endif
 
 namespace ns_my_std
 {
