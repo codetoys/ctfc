@@ -89,7 +89,7 @@ namespace ns_my_std
 			size = rows = 0;
 			optionvalue.clear();
 		}
-		void SetFormatInput(char const * _id, char const * _name, long _size, long _rows = 0, char const * _default = "", char const * _note = "")
+		void SetFormInput(char const* _id, char const* _name, long _size, long _rows = 0, char const* _default = "", char const* _note = "")
 		{
 			clear();
 			id = _id;
@@ -98,6 +98,19 @@ namespace ns_my_std
 			rows = _rows;
 			defaultvalue = _default;
 			note = _note;
+		}
+		//options空格分隔
+		void SetFormInput(char const* _id, char const* _name, long _size, string options)
+		{
+			clear();
+			id = _id;
+			name = _name;
+			size = _size;
+			StringTokenizer st(options, " ");
+			for (size_t i = 0; i < st.size(); ++i)
+			{
+				optionvalue.push_back(make_pair(st[i], st[i]));
+			}
 		}
 		void SetFormatPasswd(char const * _id, char const * _name, long _size, char const * _default = "", char const * _note = "")
 		{
@@ -367,7 +380,7 @@ namespace ns_my_std
 		}
 		struct _thtd
 		{
-			bool hidden;
+			bool hiddenInput;//隐藏的表单项
 			bool nowrap;
 			string bgcolor;
 			string align;
@@ -382,7 +395,7 @@ namespace ns_my_std
 
 			_thtd()
 			{
-				hidden = false;
+				hiddenInput = false;
 				nowrap = false;
 				isFormInput = false;
 				dataclass = CHtmlDoc_DATACLASS_HTML;
@@ -453,13 +466,9 @@ namespace ns_my_std
 				{
 					prop += " nowrap ";
 				}
-				if (hidden)
-				{
-					prop += " style=\"display:none\" ";
-				}
 				if (!isTH && this->isFormInput)
 				{
-					str += "<" + thtd + " " + prop + ">" + forminput.toHtmlInputOnly(data.c_str(), desc, false) + "</" + thtd + ">\n";
+					str += "<" + thtd + " " + prop + ">" + forminput.toHtmlInputOnly(data.c_str(), desc, canEdit && !hiddenInput) + "</" + thtd + ">\n";
 				}
 				else
 				{
@@ -798,14 +807,13 @@ namespace ns_my_std
 				//thelog << str << " : " << dbshowtype << endi;
 				return AddCol(str, dataclass, NULL, false,dbtype, dbcomment, dbshowtype);
 			}
-			//添加列，返回列索引，基于0
+			//添加列，返回列索引，基于0 hidden已废弃
 			long AddCol(string const & str, DATACLASS dataclass = CHtmlDoc_DATACLASS_TEXT, CWebCommandParam const * pCommandParam = NULL, bool hidden = false, long dbtype = -1, char const * dbcomment = NULL, char const * dbshowtype = NULL)
 			{
 				m_heads.cells.resize(m_heads.cells.size() + 1);
 				_thtd & th = m_heads.cells[m_heads.cells.size() - 1];
 				th.value = str;
 				th.dataclass = dataclass;
-				th.hidden = hidden;
 				th._dbtype = dbtype;
 				if (NULL != dbcomment)th._dbcomment = dbcomment;
 				if (NULL != dbshowtype)th._dbshowtype = dbshowtype;
@@ -853,18 +861,27 @@ namespace ns_my_std
 				return true;
 			}
 			//设置列为Form的Input，文本输入，宽度为size
-			bool SetColFormInput(char const* colname, long size, bool _hidden)
+			bool SetColFormInput(char const* colname, long size, bool _hidden = false)
 			{
 				long col = GetColIndex(colname);
 				return SetColFormInput(col, size, _hidden);
 			}
-			bool SetColFormInput(size_t col, long size, bool _hidden)
+			bool SetColFormInput(long col, long size, bool _hidden = false)
 			{
-				if (col>m_heads.cells.size())return false;
-				_thtd & th = m_heads.cells[col];
+				if (col > (long)m_heads.cells.size())return false;
+				_thtd& th = m_heads.cells[col];
 				th.isFormInput = true;
-				th.forminput.SetFormatInput(GetColName((long)col).c_str(), GetColName((long)col).c_str(), size);
-				th.hidden = _hidden;
+				th.forminput.SetFormInput(GetColName(col).c_str(), GetColName(col).c_str(), size);
+				th.hiddenInput = _hidden;
+				return true;
+			}
+			bool SetColFormInput2(long col, long size, string options, bool _hidden = false)
+			{
+				if (col > (long)m_heads.cells.size())return false;
+				_thtd& th = m_heads.cells[col];
+				th.isFormInput = true;
+				th.forminput.SetFormInput(GetColName(col).c_str(), GetColName(col).c_str(), size, options);
+				th.hiddenInput = _hidden;
 				return true;
 			}
 			//添加foot
