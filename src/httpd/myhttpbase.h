@@ -60,7 +60,7 @@ namespace ns_my_std
 		}
 	private:
 		bool m_isCgi;//是否是CGI
-		string m_fullrequest;//完整请求,包含了状态行、头标、数据
+		CBuffer m_fullrequest;//完整请求,包含了状态行、头标
 		long m_contentlength;//内容长度
 		string m_method;//请求方法，GET、POST等
 		string m_resource;//请求资源，/dir/file，不包括QueryString
@@ -68,7 +68,7 @@ namespace ns_my_std
 		PARAMLIST_T m_params;//参数表，QueryString，Form Data
 		map<string, string > m_cookies;
 		string m_content_type;//内容类型
-		string m_content;//内容
+		CBuffer m_content;//内容
 
 		//出错或需要退出返回false，seconds为0不超时
 		bool _Recv(CMySocket & s, long seconds, char * buf, int buflen, long * pReadCount, bool(*pfNeedBrek)() = NULL)
@@ -118,7 +118,7 @@ namespace ns_my_std
 		void Clear()
 		{
 			m_isCgi = false;
-			m_fullrequest = "";
+			m_fullrequest.setSize(0);
 			m_contentlength = 0;
 			m_method = "";
 			m_resource = "";
@@ -126,14 +126,14 @@ namespace ns_my_std
 			m_params.clear();
 			m_cookies.clear();
 			m_content_type = "";
-			m_content = "";
+			m_content.setSize(0);
 		}
 		map<string, string > const & GetCookies()const { return m_cookies; }
 		string const & GetResource()const { return m_resource; }//获得请求资源，/dir/file，不包括QueryString
 		string const & GetQueryString()const { return m_querystring; }//获得QueryString
 		string const & GetMethod()const { return m_method; }//获得请求方法
 		string const & GetContentType()const { return m_content_type; }//获得内容类型
-		string const & GetContent()const { return m_content; }//获得内容
+		CBuffer const & GetContent()const { return m_content; }//获得内容
 		//获得请求资源的后缀名
 		string GetResourceType()const
 		{
@@ -153,7 +153,7 @@ namespace ns_my_std
 			}
 			return "";
 		}
-		string const & GetFullRequest()const { return m_fullrequest; }//获得完整请求
+		string GetFullRequest()const { return m_fullrequest.data(); }//获得完整请求
 		long GetContentLength()const { return m_contentlength; }//获得contentlength
 		string const & GetParam(string const & param)const//获得参数，如果参数有重复则只能取得第一个
 		{
@@ -266,12 +266,13 @@ namespace ns_my_std
 			if (st.size() != 2)return false;
 			user = st[0];
 			password = st[1];
+			//thelog << pos_start << " " << pos_end << " " << base64 << endi;
 			return true;
 		}
 		PARAMLIST_T GetParamList(PARAMLIST_T & params)const { return params = m_params; }//获得参数表，<参数名，参数值>数组
 		//接收请求，此调用成功后才能调用GetXXXX
 		//pFullRequest不为空直接从pFullRequest中分析而不需要从s接收
-		bool RecvRequest(CMySocket & s, char const * pFullRequest = NULL, bool(*pfNeedBrek)() = NULL)
+		bool RecvRequest(CMySocket & s, CBuffer * pFullRequest = NULL, bool(*pfNeedBrek)() = NULL)
 		{
 			Clear();
 			m_isCgi = false;
@@ -283,7 +284,7 @@ namespace ns_my_std
 			long count;
 			string::size_type pos;
 
-			if (NULL != pFullRequest)m_fullrequest = pFullRequest;
+			if (NULL != pFullRequest)m_fullrequest.AddData(pFullRequest->data(), pFullRequest->size());
 
 			//先接收请求头
 			while (m_fullrequest.npos == (headlen = m_fullrequest.find("\r\n\r\n")))
@@ -301,7 +302,8 @@ namespace ns_my_std
 					return false;
 				}
 				buf[count] = '\0';
-				m_fullrequest += buf;
+				//thelog << endl << buf << endi;
+				m_fullrequest.AddData(buf, count);
 			}
 			//获得第一行
 			pos = m_fullrequest.find("\r\n");
@@ -336,19 +338,23 @@ namespace ns_my_std
 			}
 
 			//分析Cookie
-			AnalyzeCookie(m_fullrequest);
+			AnalyzeCookie(m_fullrequest.data());
 
 			//如果存在请求内容则接收请求内容
 			pos = m_fullrequest.find("Content-Length:");
 			if (m_fullrequest.npos == pos || pos >= headlen)
 			{
 				m_contentlength = 0;
-				m_content = "";
+				m_content.setSize(0);
 			}
 			else
 			{
-				m_contentlength = atol(m_fullrequest.c_str() + pos + strlen("Content-Length:"));
-				while (m_fullrequest.size() < headlen + strlen("\r\n\r\n") + m_contentlength)
+				m_contentlength = atol(m_fullrequest.data() + pos + strlen("Content-Length:"));
+				//thelog << "m_contentlength " << m_contentlength << endi;
+				//thelog << "headlen " << headlen << endi;
+				m_content.AddData(m_fullrequest.data() + headlen + strlen("\r\n\r\n"), m_fullrequest.size() - headlen - strlen("\r\n\r\n"));
+				m_fullrequest.erase(headlen + strlen("\r\n\r\n"));
+				while ((long)m_content.size() < m_contentlength)
 				{
 					if (!_Recv(s, timeout, buf, 1023, &count, pfNeedBrek))
 					{
@@ -363,9 +369,8 @@ namespace ns_my_std
 						return false;
 					}
 					buf[count] = '\0';
-					m_fullrequest += buf;
+					m_content.AddData(buf, count);
 				}
-				m_content = m_fullrequest.substr(headlen + strlen("\r\n\r\n"), m_contentlength);
 			}
 
 			//根据内容类型处理数据
@@ -374,7 +379,7 @@ namespace ns_my_std
 			if ("application/x-www-form-urlencoded" == m_content_type)
 			{
 				if (m_querystring.size() != 0)m_querystring += "&";
-				m_querystring += m_content;
+				m_querystring += m_content.data();
 			}
 			else if (isContentTypeXml(m_content_type))
 			{

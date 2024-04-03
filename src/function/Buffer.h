@@ -26,6 +26,45 @@ namespace ns_my_std
 			buffer_size = 0;
 		}
 	public:
+		static const size_t	npos = static_cast<size_t>(-1);
+		size_t find(string const& str)const
+		{
+			return find(str, 0);
+		}
+
+		size_t find(string const& str,size_t pos_start)const
+		{
+			//cout << __FILE__ << " " << __LINE__ << " : --------------------------------------------" << endl;
+			//cout << __FILE__ << " " << __LINE__ << " : " << this->data_size << " : " << p << endl;
+			//cout << __FILE__ << " " << __LINE__ << " : " << pos_start << endl;
+			//cout << __FILE__ << " " << __LINE__ << " : " << str.size() << " : " << str << endl;
+			char* found = search(p + pos_start, p + data_size, str.c_str(), str.c_str() + str.size());
+			if (found == p + data_size)
+			{
+				//cout << "没找到" << endl;
+				return npos;
+			}
+			else
+			{
+				//cout << "找到 "<< found - p << endl;
+				return found - p;
+			}
+		}
+		string substr(size_t start_pos, size_t count)const
+		{
+			string str;
+			for (size_t i = 0; i < count && start_pos + i < data_size; ++i)
+			{
+				if ('\0' == p[start_pos + i])break;
+				str += p[start_pos + i];
+			}
+			return str;
+		}
+		void erase(size_t pos)
+		{
+			setSize(pos);
+		}
+
 		CBuffer() :p(NULL), buffer_size(0), data_size(0)
 		{
 			_init();

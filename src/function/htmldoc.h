@@ -66,6 +66,7 @@ namespace ns_my_std
 		string id;//唯一标识
 		string name;//显示名称
 		string note;//说明
+		string dir;//文字方向 rtl靠右 （输入框文字不支持align）
 
 		bool isCheckBox;//是否是选择框
 		bool isChecked;//是否选中
@@ -107,6 +108,7 @@ namespace ns_my_std
 			name = _name;
 			size = _size;
 			StringTokenizer st(options, " ");
+			optionvalue.push_back(make_pair("", ""));
 			for (size_t i = 0; i < st.size(); ++i)
 			{
 				optionvalue.push_back(make_pair(st[i], st[i]));
@@ -165,8 +167,8 @@ namespace ns_my_std
 			}
 			if (this->isCheckBox)
 			{
-				sprintf(buf, "<input type=\"checkbox\" %s name=\"%s\" value=\"1\"><CODE><NOBR>%s</NOBR></CODE>"
-					, (this->isChecked ? "checked" : ""), this->id.c_str(), this->name.c_str());
+				sprintf(buf, "<input type=\"checkbox\" %s name=\"%s\" value=\"1\" dir=\"%s\"><CODE><NOBR>%s</NOBR></CODE>"
+					, (this->isChecked ? "checked" : ""), this->id.c_str(), this->dir.c_str(), this->name.c_str());
 				ret += buf;
 			}
 			else
@@ -209,8 +211,8 @@ namespace ns_my_std
 							if (this->isPassword)type = "PASSWORD";
 							else type = "INPUT";
 
-							sprintf(buf, "<LABEL><CODE>%s<INPUT %s TYPE=\"%s\" SIZE=\"%ld\" NAME=\"%s\" value=\"%s\"></INPUT></CODE></LABEL>"
-								, namestr, (isReadOnly ? "READONLY" : ""), type.c_str(), (smallinput ? 16 : size), encode(id).c_str(), encode(defaultvalue).c_str());
+							sprintf(buf, "<LABEL><CODE>%s<INPUT %s TYPE=\"%s\" SIZE=\"%ld\" NAME=\"%s\" value=\"%s\" dir=\"%s\"></INPUT></CODE></LABEL>"
+								, namestr, (isReadOnly ? "READONLY" : ""), type.c_str(), (smallinput ? 16 : size), encode(id).c_str(), encode(defaultvalue).c_str(), dir.c_str());
 							ret += buf;
 						}
 					}
@@ -873,6 +875,7 @@ namespace ns_my_std
 				th.isFormInput = true;
 				th.forminput.SetFormInput(GetColName(col).c_str(), GetColName(col).c_str(), size);
 				th.hiddenInput = _hidden;
+				if (th.dataclass == CHtmlDoc_DATACLASS_RIGHT)th.forminput.dir = "rtl";
 				return true;
 			}
 			bool SetColFormInput2(long col, long size, string options, bool _hidden = false)
@@ -882,6 +885,7 @@ namespace ns_my_std
 				th.isFormInput = true;
 				th.forminput.SetFormInput(GetColName(col).c_str(), GetColName(col).c_str(), size, options);
 				th.hiddenInput = _hidden;
+				if (th.dataclass == CHtmlDoc_DATACLASS_RIGHT)th.forminput.dir = "rtl";
 				return true;
 			}
 			//添加foot

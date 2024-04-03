@@ -76,10 +76,10 @@ namespace ns_my_std
 #define MAX_PP				800//独立定义的限制，一定不要小于上一行的值
 #define T_ARRAY_VMAP_MAX_SIZE		100//共享内存分块影射表的大小
 
-#define GET_PP_LRU(n)				(g_pActiveAppEnv->shm_private_data_s[n].pLRU)//获得LRU对象指针
-#define GET_PP_SET(n)				(g_pActiveAppEnv->shm_private_data_s[n].pSET)//获得SET对象指针
-#define GET_PP_VMAP(n)				(g_pActiveAppEnv->shm_private_data_s[n].pVMAP)//获得句柄映射表
-#define GET_SHM_PRIVATE_DATA(n)		(g_pActiveAppEnv->shm_private_data_s[n])//获得共享内存地址映射表
+#define GET_PP_LRU(n)				(g_shm_private_data_s[n].pLRU)//获得LRU对象指针
+#define GET_PP_SET(n)				(g_shm_private_data_s[n].pSET)//获得SET对象指针
+#define GET_PP_VMAP(n)				(g_shm_private_data_s[n].pVMAP)//获得句柄映射表
+#define GET_SHM_PRIVATE_DATA(n)		(g_shm_private_data_s[n])//获得共享内存地址映射表
 
 	////////////////////////////////////////////////////////////////////////
 	class Log;

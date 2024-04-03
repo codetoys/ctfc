@@ -296,6 +296,108 @@ namespace ns_my_std
 			delete[] buf;
 			return true;
 		}
+		bool doPageUpload(CConnectData* pCD)
+		{
+			CHttpRequest& m_request = pCD->m_request;//请求
+			CHttpRespond& m_respond = pCD->m_respond;//应答
+			CMySocket& m_s = pCD->m_s;//连接
+
+			m_respond.Init();
+			m_respond.AddHeaderNoCache();
+			m_respond.AddHeaderContentTypeByFilename("*.html");
+			m_respond.AppendBodyHtmlStart("Uplaod");
+			m_respond.AppendBody(m_request.RequestHtmlReport());
+			m_respond.AppendBody("<HR/>");
+			m_respond.AppendBody(m_request.GetFullRequest());
+			m_respond.AppendBody("<HR/>");
+			m_respond.AppendBody(m_request.GetContent().data());
+			m_respond.AppendBody("<HR/>");
+
+			string content_type = m_request.GetContentType();
+			string a = "multipart/form-data; boundary=";
+			string boundary;
+			size_t pos = content_type.find(a);
+			if (0 != pos)
+			{
+				m_respond.AppendBody("未识别的内容类型，仅支持 multipart/form-data<P>");
+			}
+			else
+			{
+				boundary = content_type.substr(a.size());
+				string boundary_begin = "--" + boundary + "\r\n";
+				string boundary_end = "--" + boundary + "--\r\n";
+				size_t part_pos;
+				size_t pos_next_find = 0;
+				while (CBuffer::npos != (part_pos = m_request.GetContent().find(boundary_begin, pos_next_find)))
+				{
+					size_t part_end = m_request.GetContent().find(boundary_end, part_pos + boundary_begin.size());
+					if (CBuffer::npos == part_end)
+					{
+						m_respond.AppendBody("数据内容不完整<P>");
+						break;
+					}
+
+					size_t part_header_end = m_request.GetContent().find("\r\n\r\n");
+					string part_header = m_request.GetContent().substr(part_pos + boundary_begin.size(), part_header_end - part_pos - boundary_begin.size());
+					size_t pos_file_name_begin;
+					string filename_head="filename=\"";
+					pos_file_name_begin = part_header.find(filename_head);
+					if (string::npos == pos_file_name_begin)
+					{
+						m_respond.AppendBody("没有文件名<P>");
+					}
+					else
+					{
+						size_t pos_file_name_end = part_header.find("\"", pos_file_name_begin + filename_head.size());
+						if (string::npos == pos_file_name_end)
+						{
+							m_respond.AppendBody("文件名格式问题<P>");
+						}
+						else
+						{
+							//thelog << pos_file_name_begin << " " << pos_file_name_end << " " << pos_file_name_end - pos_file_name_begin - filename_head.size() << endi;
+							string filename = part_header.substr(pos_file_name_begin + filename_head.size(), pos_file_name_end - pos_file_name_begin - filename_head.size());
+							if (filename.size() == 0)
+							{
+								m_respond.AppendBody("没有文件名<P>");
+							}
+							else
+							{
+								m_respond.AppendBody(filename);
+								CEasyFile file;
+								size_t pos_filedata = part_header_end + 4;
+								long filesize = part_end - pos_filedata - 2;//前面还有\r\n
+								if (!file.WriteFile(filename.c_str(), m_request.GetContent().data() + pos_filedata, filesize))
+								{
+									m_respond.AppendBody("写入失败<P>");
+								}
+								else
+								{
+									char buf[256];
+									sprintf(buf, "写入成功 字节数%ld<P>", filesize);
+									m_respond.AppendBody(buf);
+									char path[1024];
+									m_respond.AppendBody(getcwd(path, 1024));
+								}
+							}
+						}
+					}
+
+					pos_next_find = part_end + boundary_end.size();
+					m_respond.AppendBody("<HR />");
+				}
+			}
+
+			string form = "<form id=\"upload-form\" action=\"/Upload.asp\" method=\"post\" enctype=\"multipart/form-data\" >\
+				<input type=\"file\" id=\"upload\" name=\"upload\" /> <br />\
+				<input type=\"submit\" value=\"Upload\" />\
+				</form>";
+			m_respond.AppendBody(form);
+	
+			m_respond.AppendBodyHtmlEnd();
+			m_respond.Flush(m_s);
+			return true;
+		}
 		//无限页面，需要判断是否需要结束
 		bool doPageAdmin(CConnectData * pCD)
 		{
@@ -788,8 +890,10 @@ namespace ns_my_std
 					{
 						string user;
 						string password;
+						//thelog << endi;
 						if(m_request.GetAuthorization(user,password))
 						{
+							//thelog << endi;
 							if(!pfCheckUser(user.c_str(),password.c_str()))
 							{
 								m_respond.Send401(m_s,m_pServerDatas->m_realm.c_str());
@@ -886,7 +990,20 @@ namespace ns_my_std
 				}
 				else if ("/DownFile.asp" == m_request.GetResource())
 				{
-					if (doPageFile(&connectdata,m_request.GetParam("file").c_str()))
+					if (doPageFile(&connectdata, m_request.GetParam("file").c_str()))
+					{
+						m_respond.Flush(m_s);
+					}
+					else
+					{
+						m_respond.Flush(m_s);
+						m_s.Close();//所有此类页面都可能无法预先确定输出长度
+						isKeepAlive = false;
+					}
+				}
+				else if ("/Upload.asp" == m_request.GetResource())
+				{
+					if (doPageUpload(&connectdata))
 					{
 						m_respond.Flush(m_s);
 					}

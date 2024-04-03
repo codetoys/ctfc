@@ -585,7 +585,7 @@ namespace ns_my_std
 		string const & getMsg()const { return m_msg; }
 		static long GetFileSize(char const* filename)
 		{
-			FILE* file = fopen(filename, "r");
+			FILE* file = fopen(filename, "rb");
 			if (NULL == file)return -1;
 
 			long file_size = -1;
@@ -596,7 +596,7 @@ namespace ns_my_std
 		}
 		bool DeleteFile(char const* filename)
 		{
-			if (0 != remove(filename))
+			if (0 != remove(filename) && IsFileExist(filename))
 			{
 				m_msg = "删除错误";
 				return false;
@@ -639,7 +639,7 @@ namespace ns_my_std
 		bool ReadFile(char const * filename, CBuffer & filedata)
 		{
 			FILE * file;
-			file = fopen(filename, "r");
+			file = fopen(filename, "rb");
 			if (NULL == file)
 			{
 				m_msg = "未能打开文件";
@@ -674,7 +674,7 @@ namespace ns_my_std
 		bool ReadFile(char const * filename, char * buffer, long buffersize)
 		{
 			FILE * file;
-			file = fopen(filename, "r");
+			file = fopen(filename, "rb");
 			if (NULL == file)
 			{
 				m_msg = "未能打开文件";
@@ -705,15 +705,15 @@ namespace ns_my_std
 		}
 		bool WriteFile(char const* filename, char const* filedata, long datasize)
 		{
-			return WriteFile(filename, 0, filedata, (long)strlen(filedata), true);
+			return WriteFile(filename, 0, filedata, datasize, true);
 		}
 		bool WriteFile(char const* filename, long seek, char const* filedata, long datasize, bool trunc)
 		{
 			FILE* file;
-			char const* mode = "w";
-			if (!trunc)mode = "a";
+			string mode = "wb";
+			if (!trunc)mode = "ab";
 
-			file = fopen(filename, mode);
+			file = fopen(filename, mode.c_str());
 			if (NULL == file)
 			{
 				m_msg = "未能打开文件";
