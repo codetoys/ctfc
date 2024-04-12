@@ -55,8 +55,8 @@ namespace ns_my_std
 				isInited = false;
 			}
 		}
-
-		bool convert(string & str)
+		//tmpdir临时文件目录，必须以'/'结尾，iconv_open失败时用命令行转换
+		bool CharSetConvert(string& str, string const& tmpdir)
 		{
 			if (isInited)
 			{
@@ -84,13 +84,13 @@ namespace ns_my_std
 				FILE* pf;
 
 				CEasyFile file;
-				if (!file.WriteFile("iconv.tmp", str.c_str()))
+				if (!file.WriteFile((tmpdir+"iconv.tmp").c_str(), str.c_str()))
 				{
 					cout << "WriteFile失败，无法转换" << endl;
 					return false;
 				}
 				
-				string cmd = string("./iconv -f ") + from_charset + " -t " + to_charset + " iconv.tmp";
+				string cmd = string("./iconv -f ") + from_charset + " -t " + to_charset + " " + tmpdir + "iconv.tmp";
 				if (NULL == (pf = popen(cmd.c_str(), "r")))
 				{
 					cout << "popen失败，无法执行：" << errno << " : " << strerror(errno) << endl;
