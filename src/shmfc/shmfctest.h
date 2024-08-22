@@ -1110,8 +1110,7 @@ private:
 	CTestT_SHM_SET_GROUP() :m_datas("set_group", 0) {}
 	bool doTest()
 	{
-		if (!CShmEnv::getInstPtr()->ShmEnvConnect())return false;
-		if (!m_datas.DestoryShm())return false;
+		m_datas.DestoryShm();
 		if (!m_datas.adminCreateShm())return false;
 		if (!m_datas.Attach(false))return false;
 

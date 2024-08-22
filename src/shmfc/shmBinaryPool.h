@@ -551,9 +551,10 @@ namespace ns_my_std
 			shm_pointer(ShmPool::HANDLE const & h) :handle(h.handle) {}
 			shm_pointer(T * p)
 			{
+				if (BINARYPOOL_TRANCE)thelog << "shm_pointer " <<(unsigned long)p<< endi;
 				if (NULL == p)handle = 0;
 				else handle = ShmPool::HANDLE::_me((char *)p, true);
-				//if (handle < 0)throw "非法句柄";
+				if (handle < 0)throw "非法句柄";
 			}
 			//static shm_pointer pointer_to(T & tmp) { return const_shm_pointer(); }
 			static shm_pointer pointer_to(T & tmp) { return shm_pointer(tmp); }
@@ -601,9 +602,10 @@ namespace ns_my_std
 			const_shm_pointer(shm_pointer const & tmp) :handle(tmp.handle) {}
 			const_shm_pointer(T const * p)
 			{
+				if (BINARYPOOL_TRANCE)thelog << "shm_pointer " << (unsigned long)p << endi;
 				if (NULL == p)handle = 0;
 				else handle = ShmPool::HANDLE::_me((char const *)p, true);
-				//if (handle < 0)throw "非法句柄";
+				if (handle < 0)throw "非法句柄";
 			}
 			//static pointer pointer_to(T const & tmp) { return pointer((T*)(void*)&tmp); }
 			static const_shm_pointer pointer_to(T const & tmp) { return const_shm_pointer(tmp); }
@@ -709,6 +711,7 @@ namespace ns_my_std
 		}
 		size_type max_size() const throw()
 		{
+			if (BINARYPOOL_TRANCE)thelog << "max_size" << endi;
 			return 0xEFFFFFFFFFFFFFFF;
 		}
 		/* 使用placement new创建对象 */

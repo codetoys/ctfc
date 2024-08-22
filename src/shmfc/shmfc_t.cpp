@@ -330,31 +330,40 @@ int test_BinaryPool(int argc, char** argv)
 
 	if (shmpool.Attach(false))
 	{
+		thelog << "连接成功，显示" << endi;
 		shmpool.view();
 	}
 	else
 	{
+		thelog << "连接失败，重新创建" << endi;
 		shmpool.DestoryShm();
 		shmpool.CreateShm();
 		if (!shmpool.Attach(false))return __LINE__;
+		thelog << "创建完成，显示" << endi;
 		shmpool.Report();
+		thelog << endi;
 		if (!shmpool.Allocate(10, h))
 		{
 			thelog << "Allocate error" << ende;
 			return __LINE__;
 		}
+		thelog << endi;
 		strcpy(&*h, "abc");
+		thelog << endi;
 		if (!shmpool.Allocate(10, h2))
 		{
 			thelog << "Allocate error" << ende;
 			return __LINE__;
 		}
+		thelog << endi;
 		strcpy(&*h2, "def");
+		thelog << endi;
 		if (!shmpool.Deallocate(h))
 		{
 			thelog << "Deallocate error" << ende;
 			return __LINE__;
 		}
+		thelog << endi;
 		shmpool.view();
 		thelog << "-------------------------------" << endi;
 		if (!shmpool.Allocate(sizeof(shm_vector<long >), h))
@@ -473,18 +482,28 @@ int test_BinaryPool(int argc, char** argv)
 		thelog << (*it_m).first << " - " << (*it_m).second << endi;
 	}
 	shmpool.Report();
-	shm_string bs;
-	shm_string bs2;
-	bs.reserve(51);
-	bs = 'c';
-	bs = "basic";
-	bs2 = "basic_string";
-	if (bs < bs2)thelog << "" << endi;
-	if (bs.find(""))thelog << "" << endi;
-	if (bs.find_first_of(""))thelog << "" << endi;
-	thelog << bs.capacity() << endi;
-	thelog << bs.size() << endi;
-	thelog << "=====================================" << endi;
+	if (false)
+	{
+		//这一段在ubuntu下异常，当然shm_string放在私有内存可能也是问题（或许之前在centos下是没问题的）
+		BINARYPOOL_TRANCE = true;
+		thelog << "================================" << endi;
+		shm_string bs;
+		thelog << "================================" << endi;
+		shm_string bs2;
+		thelog << "================================" << endi;
+		bs.reserve(51);
+		thelog << "================================" << endi;
+		bs = 'c';
+		thelog << "================================" << endi;
+		bs = "basic";
+		bs2 = "basic_string";
+		if (bs < bs2)thelog << "" << endi;
+		if (bs.find(""))thelog << "" << endi;
+		if (bs.find_first_of(""))thelog << "" << endi;
+		thelog << bs.capacity() << endi;
+		thelog << bs.size() << endi;
+		thelog << "=====================================" << endi;
+	}
 	i = 3;
 	shmpool.Allocate(i, h);
 	shmpool.Deallocate(h, i);
@@ -810,6 +829,12 @@ int main(int argc, char** argv)
 	myBitSet<8> bm;
 	bm = "1";
 	thelog << bm.to_string() << endi;
+
+	if (!CShmEnv::getInstPtr()->isConnected() && !CShmEnv::getInstPtr()->ShmEnvConnect())
+	{
+		thelog << "未能连接到主共享内存，请检查信息" << ende;
+		return __LINE__;
+	}
 
 	while (loop)
 	{

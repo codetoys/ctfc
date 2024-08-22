@@ -378,7 +378,11 @@ namespace ns_my_std
 				thelog << "未设置信号灯名称" << ende;
 				return false;
 			}
-			if (!CShmEnv::getInstPtr()->isConnected())return false;
+			if (!CShmEnv::getInstPtr()->isConnected())
+			{
+				thelog << "主共享内存尚未连接" << ende;
+				return false;
+			}
 
 			CMyShmMutex::mySEM* _sem_id{nullptr};
 			if (!_GetSemInfo(_sem_id) || !Attach(_sem_id))

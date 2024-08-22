@@ -303,7 +303,16 @@ namespace ns_my_std
 				ShellEnvReplace(_root);
 				sprintf(buf, "%s/shmenv_shmid.runtime", _root.c_str());
 			}
-			else sprintf(buf, "%s/shmenv_shmid.runtime", getenv(MySTD_ENV));
+			else
+			{
+				char* env = getenv(MySTD_ENV);
+				if (NULL == env || '\0' == env[0])
+				{
+					cout << "未配置环境变量 " << MySTD_ENV << endl;
+					sprintf(buf, "%s", "");
+				}
+				else sprintf(buf, "%s/shmenv_shmid.runtime", env);
+			}
 			return buf;
 		}
 		//获得主SHM_ID
