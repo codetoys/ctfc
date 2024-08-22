@@ -3,7 +3,7 @@ defaul:
 	echo "please input param"
 exe : $(TARGET_OBJS)
 	$(CXX_COMPILER) --version
-	cp /home/user/gateway5g/*.o ./
+	cp /home/user/gateway5g/*.o ./ ;ls -l *.o
 	date;$(DEFAULT_LINK)  -o $(TARGET_NAME) $(TARGET_OBJS) $(COMMONLIB) $(PLATFORM_LINK_FLAG) $(USER_LINK_FLAG) -latomic -lstdc++
 	date;mv $(TARGET_NAME) ../bin
 lib : $(TARGET_OBJS)
@@ -49,7 +49,7 @@ COMMONLIB=
 USER_MICRO=-DUSER_COMPILE_TYPE='"'$(USER_COMPILE_TYPE)'"' -DLOGNAME='"'$(LOGNAME)'"' -DCOMPILE_DATE=__DATE__
 
 #cpp文件的编译命令
-COMPILE_NORMAL=date;$(CXX_COMPILER) -c $(USER_MICRO) $(PLATFORM_COMPILE_FLAG) $(USER_COMPILE_FLAG) $(INCLUDE) $(COMPILE_IOSTREAM_FLAG) -std=c++11 -fvisibility=hidden
+COMPILE_NORMAL=date;$(CXX_COMPILER) -c $(USER_MICRO) $(PLATFORM_COMPILE_FLAG) $(USER_COMPILE_FLAG) $(INCLUDE) $(COMPILE_IOSTREAM_FLAG) -std=c++11 -fvisibility=hidden -fmax-errors=10
 
 #link命令
 DEFAULT_LINK=date;$(CXX_COMPILER) -L$(COMMONLIBHOME)

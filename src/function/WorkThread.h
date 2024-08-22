@@ -33,7 +33,7 @@ namespace ns_my_std
 
 		void _WorkThread()
 		{
-			thelog << "WorkThread" << endi;
+			DEBUG_LOG << "WorkThread" << endi;
 			while (true)
 			{
 				m_manual_active = false;
@@ -51,7 +51,7 @@ namespace ns_my_std
 		}
 		void _TimerThread()
 		{
-			thelog << "TimerThread" << endi;
+			DEBUG_LOG << "TimerThread" << endi;
 			while (true)
 			{
 				timer_job();

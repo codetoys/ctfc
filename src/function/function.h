@@ -340,7 +340,11 @@ namespace ns_my_std
 		}
 		static long HexToLong(char const* hexstr)
 		{
-			long ret = 0;
+			return HexToLongLong(hexstr);
+		}
+		static long long HexToLongLong(char const* hexstr)
+		{
+			long long ret = 0;
 			char const * p = hexstr;
 			while (*p != '\0')
 			{
