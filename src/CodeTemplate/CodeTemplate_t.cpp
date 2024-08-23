@@ -24,6 +24,7 @@ int main(int argc, char ** argv)
 		stringstream ss;
 
 		O.SetObjectAddProperty("sys", "aaaaaaaaaaaaa\n");
+		S.Push();
 
 		if (!ct.ProcessTemplate("simplesample.ct", ss, O, S))
 		{

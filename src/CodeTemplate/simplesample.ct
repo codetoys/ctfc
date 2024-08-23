@@ -1,5 +1,13 @@
 simple sample
 
+<%dim x="5"%>
+${x}
+<%for i from 0 less x%>
+	in loop ${i}
+	<%if i equal 2%>
+		22222222222222
+	<%endif%>
+<%endfor%>
 ========================
 <%replace%>
 replace block
