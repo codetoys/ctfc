@@ -833,7 +833,7 @@ int main(int argc, char** argv)
 	if (!CShmEnv::getInstPtr()->isConnected() && !CShmEnv::getInstPtr()->ShmEnvConnect())
 	{
 		thelog << "未能连接到主共享内存，请检查信息" << ende;
-		return __LINE__;
+		UIInput("Press any key to continue", "");
 	}
 
 	while (loop)
