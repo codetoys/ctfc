@@ -8,6 +8,7 @@
 #include "../env/myUtil.h"
 #include "../env/CommandSet.h"
 #include "../function/myGmSSL.h"
+#include "../function/myGmSSL_sm4.h"
 
 namespace ns_my_std
 {
@@ -22,6 +23,20 @@ namespace ns_my_std
 		virtual int _doCommand(string const& input, string& output, bool silent)
 		{
 			if (!CMyGmSSL::aes_test())return 1;
+			else return 0;
+		}
+	};
+	class TestGmSSL_sm4 : public CCommandSet::command
+	{
+	public:
+		TestGmSSL_sm4()
+		{
+			m_command_name = "TestGmSSL_sm4";
+			m_command_note = "国密测试";
+		}
+		virtual int _doCommand(string const& input, string& output, bool silent)
+		{
+			if (!CMyGmSSL_sm4::sm4_test())return 1;
 			else return 0;
 		}
 	};

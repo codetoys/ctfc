@@ -13,11 +13,6 @@
 #include "mimetype.h"
 using namespace std;
 
-#ifdef _MS_VC
-#pragma comment(lib,"libssl.lib")
-#pragma comment(lib,"libcrypto.lib")
-#endif
-
 namespace ns_my_std
 {
 	class CMyGmSSL

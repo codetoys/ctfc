@@ -2,7 +2,7 @@
 #
 
 cp makefile.mk makefile
-rm *.o ../../lib/libmyenv.a ../bin/myenv.exe
+rm *.o ../bin/othertest.exe
 ../../platform/_makecpp.sh
 make all
 
