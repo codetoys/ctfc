@@ -43,7 +43,7 @@ namespace ns_my_std
 				const DIGEST* algor = digest_from_name("sm3");
 				digest(algor, (uint8_t*)"abc", 3, dgst, &dgstlen);
 
-				printf("sm3 (%zu) \n", dgstlen);
+				printf("算法：%s 长度(%zu) \n", digest_name(algor), dgstlen);
 				show_buf("digest",dgst, dgstlen);
 			}
 			if (true)
