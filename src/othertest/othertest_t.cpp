@@ -18,12 +18,14 @@ int main(int argc,char ** argv)
 	CCommandSet commandset;
 	TestGmSSL testgmssl;
 	TestGmSSL_sm4 testgmssl_sm4;
+	TestGmSSL_sm3 testgmssl_sm3;
 	do
 	{
 		commandset.AddCommand("a", &testgmssl);
 		commandset.AddCommand("x", &testgmssl_sm4);
+		commandset.AddCommand("3", &testgmssl_sm3);
 
-		ret = commandset.doCommandSet("x");
+		ret = commandset.doCommandSet("3");
 	}while(false);
 
 	ExitActiveApp(ret);
