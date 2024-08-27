@@ -13,6 +13,7 @@
 #include "../env/CommandSet.h"
 #include "shmenvmgr.h"
 #include "shmtools.h"
+#include "shmfctest2.h"
 
 using namespace ns_my_std;
 
@@ -832,7 +833,7 @@ int main(int argc, char** argv)
 
 	if (!CShmEnv::getInstPtr()->isConnected() && !CShmEnv::getInstPtr()->ShmEnvConnect())
 	{
-		thelog << "未能连接到主共享内存，请检查信息" << ende;
+		thelog << "未能连接到主共享内存，请检查信息（初次运行请用命令 0 - 1 创建）" << ende;
 		UIInput("Press any key to continue", "");
 	}
 
@@ -861,6 +862,7 @@ int main(int argc, char** argv)
 				<< "15 CTestCSimpleMultiProcess_mutex atomic" << endl
 				<< "16 CTest_hash" << endl
 				<< "17 T_SHM_HASH" << endl
+				<< "20 T_ARRAY" << endl
 				<< "88 test_CMyRWMutex" << endl
 				<< "89 test_T_SHM_SET_GROUP" << endl
 				<< "90 test_shm_IActiveObject" << endl
@@ -869,7 +871,7 @@ int main(int argc, char** argv)
 				<< "99 test_ParseFromXml" << endl
 				<< "........................................" << endl
 				<< "----------------------------------------" << endi;
-			cmd = UIInput("请选择命令：", "17");
+			cmd = UIInput("请选择命令：", "20");
 			if (cmd == "q")break;
 		}
 		long nCmd = atol(cmd.c_str());
@@ -913,6 +915,9 @@ int main(int argc, char** argv)
 			break;
 		case 17:
 			ret = T_SHM_HASH<CDemoData, PI_TEST_1, PI_TEST_2>::T_SHM_HASH_test(argc, argv, "test", 0);
+			break;
+		case 20:
+			ret = CTestT_ARRAY::test_T_ARRAY(argc, argv);
 			break;
 		case 88:
 			ret = test_CMyRWMutex(argc, argv);
