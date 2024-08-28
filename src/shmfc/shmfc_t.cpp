@@ -863,6 +863,7 @@ int main(int argc, char** argv)
 				<< "16 CTest_hash" << endl
 				<< "17 T_SHM_HASH" << endl
 				<< "20 T_ARRAY" << endl
+				<< "21 T_SHMSET_NO_MUTEX" << endl
 				<< "88 test_CMyRWMutex" << endl
 				<< "89 test_T_SHM_SET_GROUP" << endl
 				<< "90 test_shm_IActiveObject" << endl
@@ -871,7 +872,7 @@ int main(int argc, char** argv)
 				<< "99 test_ParseFromXml" << endl
 				<< "........................................" << endl
 				<< "----------------------------------------" << endi;
-			cmd = UIInput("请选择命令：", "20");
+			cmd = UIInput("请选择命令：", "21");
 			if (cmd == "q")break;
 		}
 		long nCmd = atol(cmd.c_str());
@@ -918,6 +919,9 @@ int main(int argc, char** argv)
 			break;
 		case 20:
 			ret = CTestT_ARRAY::test_T_ARRAY(argc, argv);
+			break;
+		case 21:
+			ret = CTest_T_SHMSET_NO_MUTEX::test_T_SHMSET_NO_MUTEX(argc, argv);
 			break;
 		case 88:
 			ret = test_CMyRWMutex(argc, argv);
