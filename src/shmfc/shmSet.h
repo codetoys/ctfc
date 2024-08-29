@@ -82,7 +82,7 @@ namespace ns_my_std
 		}
 		virtual bool _Attach(bool isReadOnly)
 		{
-			return T_SET::Attach(isReadOnly) && m_mutex.AttachOrCreateMutexIfNeed();
+			return T_SET::_Attach(isReadOnly) && m_mutex.AttachOrCreateMutexIfNeed();
 		}
 	public://互斥操作，全部以M为前缀
 		//清理全部数据
