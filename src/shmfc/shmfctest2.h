@@ -234,3 +234,105 @@ public:
 	}
 };
 
+class CTest_T_SHMSET_lower_bound
+{
+public:
+	struct DemoData : public CActiveObjectBase
+	{
+		typedef DemoData T_ME;
+		long a = 0;
+		long b = 0;
+		long c = 0;
+		sstring<8> s;
+
+		//用于需要排序的场合
+		bool operator < (T_ME const& tmp)const 
+		{
+			return a == tmp.a ? (b == tmp.b ? c < tmp.c : b < tmp.b) : a < tmp.a;
+		}
+		//部分比较函数
+		static bool Less_A(T_ME const& tmp1, T_ME const& tmp2)
+		{
+			return tmp1.a < tmp2.a;
+		}
+		//某些场合也需要等于
+		bool operator == (T_ME const& tmp)const { return !(*this<tmp) && !(tmp<*this); }
+
+		friend ostream& operator << (ostream& o, T_ME const& d)
+		{
+			return o << d.a << " " << d.b << " " << d.c << " " << d.s.c_str();
+		}
+		//关键字的hash值，用于分块场合，应保证hash值的最后一部分仍然是平均分布的
+		long keyhash()const { return a; }
+
+		//用于输出数据的场合
+		string& toString(string& str)const
+		{
+			char buf[2048];
+			sprintf(buf, "%ld %ld %ld %s", a, b, c, s.c_str());
+			return str = buf;
+		}
+		//用于表格输出
+		static bool AddTableColumns(CHtmlDoc::CHtmlTable2& table)
+		{
+			table.AddCol("A", CHtmlDoc::CHtmlDoc_DATACLASS_RIGHT);
+			table.AddCol("B", CHtmlDoc::CHtmlDoc_DATACLASS_RIGHT);
+			table.AddCol("C", CHtmlDoc::CHtmlDoc_DATACLASS_RIGHT);
+			table.AddCol("S", CHtmlDoc::CHtmlDoc_DATACLASS_RIGHT);
+			return true;
+		}
+		bool AddTableData(CHtmlDoc::CHtmlTable2& table)const
+		{
+			table.AddData(a);
+			table.AddData(b);
+			table.AddData(c);
+			table.AddData(s.c_str());
+			return true;
+		}
+	};
+	typedef T_SHMSET<DemoData, PI_TEST_1, CDemoData > T_CONTINER;//迭代器和数据操作都是互斥的，但连接断开等管理类操作不是互斥的（通常也不应该并发操作）
+	//typedef T_SHMSET_MUTEX<DemoData, PI_TEST_1, CDemoData > T_CONTINER;//用这个也可以，但只有M开头的操作才是互斥的，定义在shmSet.h，名字有点混乱
+	static int test_T_SHMSET_lower_bound(int argc, char** argv)
+	{
+		T_CONTINER a("test", 1);
+		a.DestoryShm();
+		if (!a.CreateShm())return __LINE__;
+		thelog << endi;
+		if (!a.Attach(false))return __LINE__;
+		thelog << endi;
+		for (int i = 0; i < 10; ++i)
+		{
+			DemoData tmp;
+			tmp.a = rand() % 2;
+			tmp.b = rand() % 2;
+			tmp.c = i;
+			tmp.s = "abc";
+			thelog << i << " n:" << tmp << " handle:" << a.insert(tmp).first.handle << endi;
+		}
+		for (T_CONTINER::const_iterator it = a.begin(); it != a.end(); ++it)
+		{
+			string str;
+			thelog << it->toString(str) << endi;
+		}
+		for (int i = 0; i < 10; ++i)
+		{
+			DemoData tmp;
+			tmp.a = i;
+			T_CONTINER::const_iterator it_from = a.lower_bound(tmp, DemoData::Less_A);
+			T_CONTINER::const_iterator it_to = a.upper_bound(tmp, DemoData::Less_A);
+			string str;
+			if (it_from != a.end())
+			{
+				thelog << "-----------------" << i << " 找到" << endi;
+				for (T_CONTINER::const_iterator it = it_from; it != it_to; ++it)
+				{
+					thelog << it->toString(str) << endi;
+				}
+			}
+			else thelog << "-----------------" << i << " 没找到" << endi;
+		}
+		a.RunCmdUI();
+
+		return 0;
+	}
+};
