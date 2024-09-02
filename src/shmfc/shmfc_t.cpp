@@ -866,6 +866,7 @@ int main(int argc, char** argv)
 				<< "21 T_SHMSET_NO_MUTEX" << endl
 				<< "22 T_SHMSET（带互斥）" << endl
 				<< "23 T_SHMSET_lower_bound（带互斥）" << endl
+				<< "24 StringPool2x" << endl
 				<< "88 test_CMyRWMutex" << endl
 				<< "89 test_T_SHM_SET_GROUP" << endl
 				<< "90 test_shm_IActiveObject" << endl
@@ -874,7 +875,7 @@ int main(int argc, char** argv)
 				<< "99 test_ParseFromXml" << endl
 				<< "........................................" << endl
 				<< "----------------------------------------" << endi;
-			cmd = UIInput("请选择命令：", "23");
+			cmd = UIInput("请选择命令：", "24");
 			if (cmd == "q")break;
 		}
 		long nCmd = atol(cmd.c_str());
@@ -930,6 +931,9 @@ int main(int argc, char** argv)
 			break;
 		case 23:
 			ret = CTest_T_SHMSET_lower_bound::test_T_SHMSET_lower_bound(argc, argv);
+			break;
+		case 24:
+			ret = CTest_StringPool2x::test_StringPool2x(argc, argv);
 			break;
 		case 88:
 			ret = test_CMyRWMutex(argc, argv);

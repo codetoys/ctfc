@@ -336,3 +336,41 @@ public:
 		return 0;
 	}
 };
+
+#include "shmStringPool2.h"
+class CTest_StringPool2x
+{
+public:
+	typedef StringPool2x<CTest_StringPool2x, PI_TEST_1, PI_TEST_2, CDemoData > T_CONTINER;
+	static int test_StringPool2x(int argc, char** argv)
+	{
+		T_CONTINER a("test", 1);
+		a.DestoryShm();
+		if (!a.CreateShm())return __LINE__;
+		thelog << endi;
+		if (!a.Attach(false))return __LINE__;
+		thelog << endi;
+		vector<T_CONTINER::HANDLE > v_handles;
+		for (int i = 0; i < 10; ++i)
+		{
+			T_CONTINER::HANDLE h;
+			char buf[256];
+			sprintf(buf, "abc%d", (5 == i ? 6 : i));
+			if (!a.AddString(buf, h))thelog << "添加失败 " << i << " : " << buf << ende;
+			else
+			{
+				thelog << "添加成功 " << i << " : " << buf << ende;
+				v_handles.push_back(h);
+			}
+		}
+		for (vector<T_CONTINER::HANDLE >::const_iterator it = v_handles.begin(); it != v_handles.end(); ++it)
+		{
+			string str;
+			thelog << (*it).handle << " : " << a.GetString(*it) << endi;
+		}
+
+		a.RunCmdUI();
+
+		return 0;
+	}
+};
