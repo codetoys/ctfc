@@ -867,6 +867,8 @@ int main(int argc, char** argv)
 				<< "22 T_SHMSET（带互斥）" << endl
 				<< "23 T_SHMSET_lower_bound（带互斥）" << endl
 				<< "24 StringPool2x" << endl
+				<< "25 T_MULTI_LIST" << endl
+				<< "26 T_MULTI_LISTTREE" << endl
 				<< "88 test_CMyRWMutex" << endl
 				<< "89 test_T_SHM_SET_GROUP" << endl
 				<< "90 test_shm_IActiveObject" << endl
@@ -875,7 +877,7 @@ int main(int argc, char** argv)
 				<< "99 test_ParseFromXml" << endl
 				<< "........................................" << endl
 				<< "----------------------------------------" << endi;
-			cmd = UIInput("请选择命令：", "24");
+			cmd = UIInput("请选择命令：", "26");
 			if (cmd == "q")break;
 		}
 		long nCmd = atol(cmd.c_str());
@@ -934,6 +936,12 @@ int main(int argc, char** argv)
 			break;
 		case 24:
 			ret = CTest_StringPool2x::test_StringPool2x(argc, argv);
+			break;
+		case 25:
+			ret = CTest_T_MULTI_LIST::test_T_MULTI_LIST(argc, argv);
+			break;
+		case 26:
+			ret = CTest_T_MULTI_LISTTREE::test_T_MULTI_LISTTREE(argc, argv);
 			break;
 		case 88:
 			ret = test_CMyRWMutex(argc, argv);

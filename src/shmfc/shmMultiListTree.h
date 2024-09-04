@@ -322,12 +322,18 @@ namespace ns_my_std
 
 			iterator it;
 			it.handle = h;
+			//thelog << it.handle << endi;
 			while (!it.isEnd())
 			{
+				//thelog << it.handle << endi;
+				char buf[64];
+				sprintf(buf, "%4d:", (int)it.handle);
 				string str;
-				ret += px + it->toString(str) + "\n";
-				_ReportList(it.getChild(), ret, level + 1);
-				++it;
+				ret += px + buf + it->toString(str) + "\n";
+				if (it.getChild() != -1)_ReportList(it.getChild(), ret, level + 1);
+				//thelog << it.handle << endi;
+				it.handle = it.getNext();
+				//thelog << it.handle << endi;
 			}
 			return ret;
 		}

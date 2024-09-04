@@ -374,3 +374,217 @@ public:
 		return 0;
 	}
 };
+
+#include "shmMultiList.h"
+class CTest_T_MULTI_LIST
+{
+public:
+	struct DemoData : public CActiveObjectBase
+	{
+		typedef DemoData T_ME;
+		long a = 0;
+		long b = 0;
+		long c = 0;
+		sstring<8> s;
+
+		//用于需要排序的场合
+		bool operator < (T_ME const& tmp)const
+		{
+			return a == tmp.a ? (b == tmp.b ? c < tmp.c : b < tmp.b) : a < tmp.a;
+		}
+		//部分比较函数
+		static bool Less_A(T_ME const& tmp1, T_ME const& tmp2)
+		{
+			return tmp1.a < tmp2.a;
+		}
+		//某些场合也需要等于
+		bool operator == (T_ME const& tmp)const { return !(*this < tmp) && !(tmp < *this); }
+
+		friend ostream& operator << (ostream& o, T_ME const& d)
+		{
+			return o << d.a << " " << d.b << " " << d.c << " " << d.s.c_str();
+		}
+		//关键字的hash值，用于分块场合，应保证hash值的最后一部分仍然是平均分布的
+		long keyhash()const { return a; }
+
+		//用于输出数据的场合
+		string& toString(string& str)const
+		{
+			char buf[2048];
+			sprintf(buf, "%ld %ld %ld %s", a, b, c, s.c_str());
+			return str = buf;
+		}
+		//用于表格输出
+		static bool AddTableColumns(CHtmlDoc::CHtmlTable2& table)
+		{
+			table.AddCol("A", CHtmlDoc::CHtmlDoc_DATACLASS_RIGHT);
+			table.AddCol("B", CHtmlDoc::CHtmlDoc_DATACLASS_RIGHT);
+			table.AddCol("C", CHtmlDoc::CHtmlDoc_DATACLASS_RIGHT);
+			table.AddCol("S", CHtmlDoc::CHtmlDoc_DATACLASS_RIGHT);
+			return true;
+		}
+		bool AddTableData(CHtmlDoc::CHtmlTable2& table)const
+		{
+			table.AddData(a);
+			table.AddData(b);
+			table.AddData(c);
+			table.AddData(s.c_str());
+			return true;
+		}
+	};
+	typedef T_MULTI_LIST<DemoData, PI_TEST_1 > T_CONTINER;
+	static int test_T_MULTI_LIST(int argc, char** argv)
+	{
+		T_CONTINER a("test", 1);
+		a.getIShmActiveObject()->DestoryShm();
+		if (!a.getIShmActiveObject()->CreateShm())return __LINE__;
+		thelog << endi;
+		if (!a.getIShmActiveObject()->Attach(false))return __LINE__;
+		thelog << endi;
+
+		string str;
+
+		vector<T_CONTINER::iterator > v_heads;
+		for (int i = 0; i < 2; ++i)
+		{
+			T_CONTINER::iterator head;
+			DemoData tmp;
+			tmp.a = i;
+			
+			if (!a.AddHead(head, tmp))return __LINE__;
+			thelog << "添加成功 " << i << " : " << tmp.toString(str) << endi;
+			v_heads.push_back(head);
+
+			for (int j = 10; j < 12; ++j)
+			{
+				DemoData tmp2;
+				tmp2.a = i;
+				tmp2.b = j;
+
+				if (!a.AddTail(head, tmp2))return __LINE__;
+				thelog << "添加成功 " << i << " " << j << " : " << tmp2.toString(str) << endi;
+			}
+		}
+		for (vector<T_CONTINER::iterator >::const_iterator it = v_heads.begin(); it != v_heads.end(); ++it)
+		{
+			for(auto x=*it;!x.isEnd();++x)
+			{
+				thelog << x.handle << " : " << x->toString(str) << endi;
+			}
+		}
+
+		a.getIShmActiveObject()->RunCmdUI();
+
+		return 0;
+	}
+};
+
+#include "shmMultiListTree.h"
+class CTest_T_MULTI_LISTTREE
+{
+public:
+	struct DemoData : public CActiveObjectBase
+	{
+		typedef DemoData T_ME;
+		long a = 0;
+		long b = 0;
+		long c = 0;
+		sstring<8> s;
+
+		//用于需要排序的场合
+		bool operator < (T_ME const& tmp)const
+		{
+			return a == tmp.a ? (b == tmp.b ? c < tmp.c : b < tmp.b) : a < tmp.a;
+		}
+		//部分比较函数
+		static bool Less_A(T_ME const& tmp1, T_ME const& tmp2)
+		{
+			return tmp1.a < tmp2.a;
+		}
+		//某些场合也需要等于
+		bool operator == (T_ME const& tmp)const { return !(*this < tmp) && !(tmp < *this); }
+
+		friend ostream& operator << (ostream& o, T_ME const& d)
+		{
+			return o << d.a << " " << d.b << " " << d.c << " " << d.s.c_str();
+		}
+		//关键字的hash值，用于分块场合，应保证hash值的最后一部分仍然是平均分布的
+		long keyhash()const { return a; }
+
+		//用于输出数据的场合
+		string& toString(string& str)const
+		{
+			char buf[2048];
+			sprintf(buf, "%ld %ld %ld %s", a, b, c, s.c_str());
+			return str = buf;
+		}
+		//用于表格输出
+		static bool AddTableColumns(CHtmlDoc::CHtmlTable2& table)
+		{
+			table.AddCol("A", CHtmlDoc::CHtmlDoc_DATACLASS_RIGHT);
+			table.AddCol("B", CHtmlDoc::CHtmlDoc_DATACLASS_RIGHT);
+			table.AddCol("C", CHtmlDoc::CHtmlDoc_DATACLASS_RIGHT);
+			table.AddCol("S", CHtmlDoc::CHtmlDoc_DATACLASS_RIGHT);
+			return true;
+		}
+		bool AddTableData(CHtmlDoc::CHtmlTable2& table)const
+		{
+			table.AddData(a);
+			table.AddData(b);
+			table.AddData(c);
+			table.AddData(s.c_str());
+			return true;
+		}
+	};
+	typedef T_MULTI_LISTTREE<DemoData, PI_TEST_1 > T_CONTINER;
+	static int test_T_MULTI_LISTTREE(int argc, char** argv)
+	{
+		T_CONTINER a("test", 1);
+		a.getIShmActiveObject()->DestoryShm();
+		if (!a.getIShmActiveObject()->CreateShm())return __LINE__;
+		thelog << endi;
+		if (!a.getIShmActiveObject()->Attach(false))return __LINE__;
+		thelog << endi;
+
+		string str;
+
+		vector<T_CONTINER::iterator > v_heads;
+		for (int i = 0; i < 2; ++i)
+		{
+			T_CONTINER::iterator head;
+
+			for (int j = 10; j < 12; ++j)
+			{
+				DemoData tmp2;
+				tmp2.a = i;
+				tmp2.b = j;
+
+				T_CONTINER::iterator it2;
+				if (!a.AddList(head, tmp2, it2))return __LINE__;
+				thelog << "添加成功 " << head.handle << " " << it2.handle << " : " << tmp2.toString(str) << endi;
+				if(10==j)v_heads.push_back(head);
+
+				for (int k = 100; k < 102; ++k)
+				{
+					DemoData tmp3;
+					tmp3.a = i;
+					tmp3.b = j;
+					tmp3.c = k;
+
+					T_CONTINER::iterator it_child;
+					if (!a.AddChild(it2, tmp3, it_child))return __LINE__;
+					thelog << "添加成功 " << i << " " << j << " " << k << " : " << tmp3.toString(str) << endi;
+				}
+			}
+		}
+		for (vector<T_CONTINER::iterator >::const_iterator it = v_heads.begin(); it != v_heads.end(); ++it)
+		{
+			str = "";
+			thelog << (*it).handle << endl << a.ReportList((*it).handle, str) << endi;
+		}
+
+		a.getIShmActiveObject()->RunCmdUI();
+
+		return 0;
+	}
+};
