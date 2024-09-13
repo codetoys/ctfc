@@ -712,7 +712,7 @@ namespace ns_my_std
 		size_type max_size() const throw()
 		{
 			if (BINARYPOOL_TRANCE)thelog << "max_size" << endi;
-			return 0xEFFFFFFFFFFFFFFF;
+			return SIZE_MAX;
 		}
 		/* 使用placement new创建对象 */
 		void construct(pointer p, const_reference value)

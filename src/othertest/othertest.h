@@ -8,6 +8,7 @@
 #include "../env/myUtil.h"
 #include "../env/CommandSet.h"
 #include "../function/myGmSSL.h"
+#include "../function/myGmSSL_aes.h"
 #include "../function/myGmSSL_sm4.h"
 #include "../function/myGmSSL_sm3.h"
 
@@ -23,7 +24,21 @@ namespace ns_my_std
 		}
 		virtual int _doCommand(string const& input, string& output, bool silent)
 		{
-			if (!CMyGmSSL::aes_test())return 1;
+			if (!CMyGmSSL::protect_encode_test())return 1;
+			else return 0;
+		}
+	};
+	class TestGmSSL_aes : public CCommandSet::command
+	{
+	public:
+		TestGmSSL_aes()
+		{
+			m_command_name = "TestGmSSL_aes";
+			m_command_note = "国密测试";
+		}
+		virtual int _doCommand(string const& input, string& output, bool silent)
+		{
+			if (!CMyGmSSL_aes::GM_aes_test())return 1;
 			else return 0;
 		}
 	};

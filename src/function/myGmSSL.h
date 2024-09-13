@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <stdio.h>
 #include <stdlib.h>
-#include <gmssl/aes.h>
+#include <gmssl/sm4.h>
 #include <gmssl/rand.h>
 #include <vector>
 #include "Buffer.h"
@@ -34,33 +34,33 @@ namespace ns_my_std
 		class IV
 		{
 		private:
-			unsigned char iv[AES_BLOCK_SIZE * 5];
+			unsigned char iv[SM4_BLOCK_SIZE];
 		public:
 			IV()
 			{
-				memset(iv, 0, AES_BLOCK_SIZE * 5);
+				memset(iv, 0, SM4_BLOCK_SIZE);
 			}
 			//执行异或
 			static void XOR(unsigned char const* iv, unsigned char* data)
 			{
-				//show_buf("IV  ", iv, AES_BLOCK_SIZE);
-				//show_buf("DATA", data, AES_BLOCK_SIZE);
-				for (int i = 0; i < AES_BLOCK_SIZE; ++i)
+				//show_buf("IV  ", iv, SM4_BLOCK_SIZE);
+				//show_buf("DATA", data, SM4_BLOCK_SIZE);
+				for (int i = 0; i < SM4_BLOCK_SIZE; ++i)
 				{
 					data[i] ^= iv[i];
 				}
-				//show_buf("DATA", data, AES_BLOCK_SIZE);
+				//show_buf("DATA", data, SM4_BLOCK_SIZE);
 			}
 			int size()const
 			{
-				return AES_BLOCK_SIZE;
+				return SM4_BLOCK_SIZE;
 			}
 			//用随机数设置
 			void Create()
 			{
 				time_t t = time(NULL);
 				srand(t);
-				for (int i = 0; i < AES_BLOCK_SIZE; i += sizeof(int))
+				for (int i = 0; i < SM4_BLOCK_SIZE; i += sizeof(int))
 				{
 					int a = rand();
 					memcpy(iv + i, &a, sizeof(int));
@@ -68,97 +68,93 @@ namespace ns_my_std
 			}
 			void Set(unsigned char const* a)
 			{
-				memcpy(iv, a, AES_BLOCK_SIZE);
+				memcpy(iv, a, SM4_BLOCK_SIZE);
 			}
 			//注意，会修改内容
 			unsigned char* Get()
 			{
-				//show_buf("", iv, AES_BLOCK_SIZE * 2);
+				//show_buf("IV ", iv, SM4_BLOCK_SIZE);
 				return iv;
 			}
 		};
-		//由于网上的例子也一样无法解密，所以自行实现CBC
-		static void my_AES_cbc_encrypt(const unsigned char* in, unsigned char* out, size_t length, const AES_KEY* key, unsigned char* ivec, bool isEnc)
+		//所以自行实现CBC
+		static void my_SM4_cbc_encrypt(const unsigned char* in, unsigned char* out, size_t length, const SM4_KEY* key, unsigned char* ivec, bool isEnc)
 		{
-			//AES_cbc_encrypt(in, out, length, key, ivec, enc);
-			for (int i = 0; i < (int)length; i += AES_BLOCK_SIZE)
+			for (int i = 0; i < (int)length; i += SM4_BLOCK_SIZE)
 			{
 				if (isEnc)
 				{
-					unsigned char tmpin[AES_BLOCK_SIZE];
-					memcpy(tmpin, in + i, AES_BLOCK_SIZE);
+					unsigned char tmpin[SM4_BLOCK_SIZE];
+					memcpy(tmpin, in + i, SM4_BLOCK_SIZE);
 					IV::XOR(ivec, tmpin); thelog << endi;
-					aes_encrypt(key, tmpin, out + i); thelog << endi;
-					memcpy(ivec, out + i, AES_BLOCK_SIZE);
+					sm4_encrypt(key, tmpin, out + i); thelog << endi;
+					memcpy(ivec, out + i, SM4_BLOCK_SIZE);
 				}
 				else
 				{
-					unsigned char tmpiv[AES_BLOCK_SIZE];
-					memcpy(tmpiv, in + i, AES_BLOCK_SIZE);
-					aes_decrypt(key, in + i, out + i);
+					unsigned char tmpiv[SM4_BLOCK_SIZE];
+					memcpy(tmpiv, in + i, SM4_BLOCK_SIZE);
+					sm4_encrypt(key, in + i, out + i);
 					IV::XOR(ivec, out + i);
-					memcpy(ivec, tmpiv, AES_BLOCK_SIZE);
+					memcpy(ivec, tmpiv, SM4_BLOCK_SIZE);
 				}
 			}
 		}
-		static int my_aes_encrypt(unsigned char const* userpasswd, int userpasswd_len, vector<unsigned char> const& in_plain, vector<unsigned char>& out_ciphertext, IV& iv)
+		static int my_sm4_encrypt(unsigned char const* userpasswd, int userpasswd_len, vector<unsigned char> const& in_plain, vector<unsigned char>& out_ciphertext, IV& iv)
 		{
 			out_ciphertext.clear();
-			unsigned char userkey[32];//必须是16/24/32
-			memset((void*)userkey, '\0', 32);
-			memcpy(userkey, userpasswd, (userpasswd_len > 32 ? 32 : userpasswd_len));
-			/*设置加密key及密钥长度*/
-			AES_KEY key;
-			if (aes_set_encrypt_key(&key, userkey, 32) < 0)
-			{
-				return __LINE__;
-			}
+
+			unsigned char userkey[SM4_KEY_SIZE];
+			memset((void*)userkey, '\0', SM4_KEY_SIZE);
+			memcpy(userkey, userpasswd, (userpasswd_len > SM4_KEY_SIZE ? SM4_KEY_SIZE : userpasswd_len));
+			show_buf("key ", userkey, SM4_KEY_SIZE);
+
+			SM4_KEY key;
+			sm4_set_encrypt_key(&key, userkey);
 
 			int len = 0;
-			/*循环加密，每次只能加密AES_BLOCK_SIZE长度的数据*/
-			out_ciphertext.reserve(in_plain.size() + AES_BLOCK_SIZE);
+			/*循环加密，每次只能加密SM4_BLOCK_SIZE长度的数据*/
+			out_ciphertext.reserve(in_plain.size() + SM4_BLOCK_SIZE);
 			while (len < (int)in_plain.size())
 			{
 				if (0 == len)
 				{//第一个块是明文长度
-					out_ciphertext.resize(out_ciphertext.size() + AES_BLOCK_SIZE);
-					unsigned char tmp[AES_BLOCK_SIZE];
-					memset((void*)tmp, '\0', AES_BLOCK_SIZE);
+					out_ciphertext.resize(out_ciphertext.size() + SM4_BLOCK_SIZE);
+					unsigned char tmp[SM4_BLOCK_SIZE];
+					memset((void*)tmp, '\0', SM4_BLOCK_SIZE);
 					uint64_t tmp_len = in_plain.size();
 					memcpy(tmp, &tmp_len, sizeof(uint64_t));
-					//show_buf("明文长度加密前 ", tmp, AES_BLOCK_SIZE);
-					my_AES_cbc_encrypt(tmp, &out_ciphertext[out_ciphertext.size() - AES_BLOCK_SIZE], AES_BLOCK_SIZE, &key, iv.Get(), true);
-					//show_buf("明文长度加密后", &out_ciphertext[out_ciphertext.size() - AES_BLOCK_SIZE], AES_BLOCK_SIZE);
+					//show_buf("明文长度加密前 ", tmp, SM4_BLOCK_SIZE);
+					my_SM4_cbc_encrypt(tmp, &out_ciphertext[out_ciphertext.size() - SM4_BLOCK_SIZE], SM4_BLOCK_SIZE, &key, iv.Get(), true);
+					//show_buf("明文长度加密后", &out_ciphertext[out_ciphertext.size() - SM4_BLOCK_SIZE], SM4_BLOCK_SIZE);
 				}
-				out_ciphertext.resize(out_ciphertext.size() + AES_BLOCK_SIZE);
-				if (in_plain.size() - len < AES_BLOCK_SIZE)
+				out_ciphertext.resize(out_ciphertext.size() + SM4_BLOCK_SIZE);
+				if (in_plain.size() - len < SM4_BLOCK_SIZE)
 				{
-					unsigned char tmp[AES_BLOCK_SIZE];
-					memset((void*)tmp, '\0', AES_BLOCK_SIZE);
+					unsigned char tmp[SM4_BLOCK_SIZE];
+					memset((void*)tmp, '\0', SM4_BLOCK_SIZE);
 					memcpy(tmp, &in_plain[len], in_plain.size() - len);
-					my_AES_cbc_encrypt(tmp, &out_ciphertext[out_ciphertext.size() - AES_BLOCK_SIZE], AES_BLOCK_SIZE, &key, iv.Get(), true);
+					my_SM4_cbc_encrypt(tmp, &out_ciphertext[out_ciphertext.size() - SM4_BLOCK_SIZE], SM4_BLOCK_SIZE, &key, iv.Get(), true);
 				}
 				else
 				{
-					my_AES_cbc_encrypt(&in_plain[len], &out_ciphertext[out_ciphertext.size() - AES_BLOCK_SIZE], AES_BLOCK_SIZE, &key, iv.Get(), true);
+					my_SM4_cbc_encrypt(&in_plain[len], &out_ciphertext[out_ciphertext.size() - SM4_BLOCK_SIZE], SM4_BLOCK_SIZE, &key, iv.Get(), true);
 				}
-				len += AES_BLOCK_SIZE;
+				len += SM4_BLOCK_SIZE;
 			}
 
 			return 0;
 		}
-		static int my_aes_decrypt(unsigned char const* userpasswd, int userpasswd_len, vector<unsigned char> const& in_ciphertext, vector<unsigned char>& out_plain, IV& iv)
+		static int my_sm4_decrypt(unsigned char const* userpasswd, int userpasswd_len, vector<unsigned char> const& in_ciphertext, vector<unsigned char>& out_plain, IV& iv)
 		{
 			out_plain.clear();
-			unsigned char userkey[32];//必须是16/24/32
-			memset((void*)userkey, '\0', 32);
-			memcpy(userkey, userpasswd, (userpasswd_len > 32 ? 32 : userpasswd_len));
-			/*设置解密key及密钥长度*/
-			AES_KEY key;
-			if (aes_set_decrypt_key(&key, userkey, 32) < 0)
-			{
-				return __LINE__;
-			}
+
+			unsigned char userkey[SM4_KEY_SIZE];
+			memset((void*)userkey, '\0', SM4_KEY_SIZE);
+			memcpy(userkey, userpasswd, (userpasswd_len > SM4_KEY_SIZE ? SM4_KEY_SIZE : userpasswd_len));
+
+			SM4_KEY key;
+			sm4_set_decrypt_key(&key, userkey);
 
 			int len = 0;
 			/*循环解密*/
@@ -168,17 +164,17 @@ namespace ns_my_std
 			{
 				if (0 == len)
 				{//第一个块是明文长度
-					unsigned char tmp[AES_BLOCK_SIZE];
-					//show_buf("明文长度解密前", &in_ciphertext[len], AES_BLOCK_SIZE);
-					my_AES_cbc_encrypt(&in_ciphertext[len], tmp, AES_BLOCK_SIZE, &key, iv.Get(), false);
-					//show_buf("明文长度解密后", tmp, AES_BLOCK_SIZE);
+					unsigned char tmp[SM4_BLOCK_SIZE];
+					//show_buf("明文长度解密前", &in_ciphertext[len], SM4_BLOCK_SIZE);
+					my_SM4_cbc_encrypt(&in_ciphertext[len], tmp, SM4_BLOCK_SIZE, &key, iv.Get(), false);
+					//show_buf("明文长度解密后", tmp, SM4_BLOCK_SIZE);
 					memcpy(&out_len, tmp, sizeof(uint64_t));
 					//thelog << "明文长度应该是 " << out_len << endi;
-					len += AES_BLOCK_SIZE;
+					len += SM4_BLOCK_SIZE;
 				}
-				out_plain.resize(out_plain.size() + AES_BLOCK_SIZE);
-				my_AES_cbc_encrypt(&in_ciphertext[len], &out_plain[out_plain.size() - AES_BLOCK_SIZE], AES_BLOCK_SIZE, &key, iv.Get(), false);
-				len += AES_BLOCK_SIZE;
+				out_plain.resize(out_plain.size() + SM4_BLOCK_SIZE);
+				my_SM4_cbc_encrypt(&in_ciphertext[len], &out_plain[out_plain.size() - SM4_BLOCK_SIZE], SM4_BLOCK_SIZE, &key, iv.Get(), false);
+				len += SM4_BLOCK_SIZE;
 			}
 
 			//恢复原始长度
@@ -196,7 +192,7 @@ namespace ns_my_std
 			input.SetData(_input.c_str(), _input.size());
 			if (protect_encode(passwd, input, output))
 			{
-				_output = (char *)output.data();
+				_output = (char*)output.data();
 				return true;
 			}
 			return false;
@@ -206,6 +202,7 @@ namespace ns_my_std
 			output.setSize(0);
 			IV iv;
 			iv.Create();
+			//show_buf("IV ", iv.Get(), iv.size());
 
 			CUnsignedBuffer tmp;
 			unsigned char ver = getVer();
@@ -217,7 +214,7 @@ namespace ns_my_std
 			in_plain.resize(input.size());
 			memcpy(&in_plain[0], input.data(), input.size());
 			vector<unsigned char> out_ciphertext;
-			my_aes_encrypt(passwd.data(), passwd.size(), in_plain, out_ciphertext, iv);
+			my_sm4_encrypt(passwd.data(), passwd.size(), in_plain, out_ciphertext, iv);
 			//thelog << out_ciphertext.size() << endi;
 
 			//添加加密后数据
@@ -281,159 +278,15 @@ namespace ns_my_std
 			memcpy(&in_plain[0], tmp.data() + 1 + iv.size(), tmp.size() - 1 - iv.size());
 			//thelog << tmp.size() << " " << in_plain.size() << endi;
 			vector<unsigned char> out_ciphertext;
-			my_aes_decrypt(passwd.data(), passwd.size(), in_plain, out_ciphertext, iv);
+			my_sm4_decrypt(passwd.data(), passwd.size(), in_plain, out_ciphertext, iv);
 
 			output.AddData(&out_ciphertext[0], out_ciphertext.size());
 
 			return true;
 		}
-		// a simple hex-print routine. could be modified to print 16 bytes-per-line
-		static void hex_print(const void* pv, size_t len)
+
+		static bool protect_encode_test()
 		{
-			const unsigned char* p = (const unsigned char*)pv;
-			if (NULL == pv)
-			{
-				printf("NULL");
-			}
-			else
-			{
-				size_t i = 0;
-				for (; i < len; ++i)
-				{
-					printf("%02X ", *p++);
-				}
-			}
-			printf("\n");
-		}
-
-		// main entrypoint
-		static int a()
-		{
-			int const keylength = 128;
-
-			/* generate a key with a given length */
-			unsigned char aes_key[keylength / 8];
-			memset(aes_key, 0, keylength / 8);
-			if (!rand_bytes(aes_key, keylength / 8))
-			{
-				return __LINE__;
-			}
-
-			char const* input = "12345678901234567890";
-			size_t const inputslength = 32;
-
-			/* generate input with a given length */
-			unsigned char aes_input[inputslength];
-			memset(aes_input, 0, inputslength);
-			memcpy(aes_input, input, strlen(input));
-
-			/* init vector */
-			unsigned char iv_enc[AES_BLOCK_SIZE], iv_dec[AES_BLOCK_SIZE];
-			rand_bytes(iv_enc, AES_BLOCK_SIZE);
-			memcpy(iv_dec, iv_enc, AES_BLOCK_SIZE);
-
-			// buffers for encryption and decryption
-			unsigned char enc_out[inputslength];
-			unsigned char dec_out[inputslength];
-			memset(enc_out, 0, sizeof(enc_out));
-			memset(dec_out, 0, sizeof(dec_out));
-
-			// so i can do with this aes-cbc-128 aes-cbc-192 aes-cbc-256
-			AES_KEY enc_key, dec_key;
-			aes_set_encrypt_key(&enc_key, aes_key, keylength/8);
-			my_AES_cbc_encrypt(aes_input, enc_out, inputslength, &enc_key, iv_enc, true);
-
-			aes_set_decrypt_key(&dec_key, aes_key, keylength/8);
-			//本函数是网上代码，但是在linux下一样失败，在win下则导致异常（解密正确但退出时异常），原因是此段代码错误使用了长度参数
-			//此函数并不处理padding，所以输出长度和输入长度是相同的，只不过加上了cbc操作而已（正如我自己写的那个替代品）
-			//此处原来的输入比需要的长，导致堆栈异常，按理多解密一个无意义的块有什么危害呢？
-			my_AES_cbc_encrypt(enc_out, dec_out, inputslength, &dec_key, iv_dec, false);
-
-			printf("original(%d):\t", static_cast<int>(sizeof(aes_input)));
-			hex_print(aes_input, sizeof(aes_input));
-
-			printf("encrypt(%d):\t", static_cast<int>(sizeof(enc_out)));
-			hex_print(enc_out, sizeof(enc_out));
-
-			printf("decrypt(%d):\t", static_cast<int>(sizeof(dec_out)));
-			hex_print(dec_out, sizeof(dec_out));
-
-			return 0;
-		}
-		static bool aes_test()
-		{
-			if (true)
-			{
-				constexpr int keybits = 128;
-				thelog << "keybits " << keybits <<" bytes "<< keybits / 8 << endi;
-				unsigned char userkey[keybits/8];//必须是16/24/32
-				memset((void*)userkey, '\0', keybits / 8);
-				memcpy(userkey, "12345", 5);
-				AES_KEY key;
-				if (aes_set_encrypt_key(&key, userkey, keybits/8) < 0)
-				{
-					return __LINE__;
-				}
-				unsigned char iv[AES_BLOCK_SIZE];
-				unsigned char data[AES_BLOCK_SIZE];
-				memset(data, 1, AES_BLOCK_SIZE);
-				unsigned char data2[AES_BLOCK_SIZE];
-				memset(data2, 0, AES_BLOCK_SIZE);
-				unsigned char data3[AES_BLOCK_SIZE * 3];
-				memset(data3, 0, AES_BLOCK_SIZE * 3);
-
-				memset(iv, 0, AES_BLOCK_SIZE);
-				show_buf("简单输入 ", data, AES_BLOCK_SIZE);
-				show_buf("iv ", iv, AES_BLOCK_SIZE);
-				my_AES_cbc_encrypt(data, data2, AES_BLOCK_SIZE, &key, iv, true);
-				show_buf("加密后   ", data2, AES_BLOCK_SIZE);
-				show_buf("iv ", iv, AES_BLOCK_SIZE);
-
-				if (aes_set_decrypt_key(&key,userkey, keybits/8) < 0)
-				{
-					return __LINE__;
-				}
-				memset(iv, 0, AES_BLOCK_SIZE);
-				show_buf("解密前   ", data2, AES_BLOCK_SIZE);
-				show_buf("iv ", iv, AES_BLOCK_SIZE);
-				my_AES_cbc_encrypt(data2, data3, AES_BLOCK_SIZE, &key, iv, false);
-				show_buf("简单输出 ", data3, AES_BLOCK_SIZE * 3);
-				show_buf("iv ", iv, AES_BLOCK_SIZE);
-
-				a(); thelog << "网上代码测试完成" << endi;
-			}
-			if (true)
-			{
-				string passwd = "13579";
-				vector<unsigned char> plaintext;
-				for (int i = 0; i < 65; ++i)
-				{
-					plaintext.push_back(i);
-				}
-				vector<unsigned char> out;
-				IV iv;
-				iv.Create();
-				IV iv2;
-				iv2.Set(iv.Get());
-				//show_buf("初始IV", iv.Get(), iv.size());
-				my_aes_encrypt((unsigned char*)passwd.c_str(), passwd.size(), plaintext, out, iv);
-				vector<unsigned char> plaintext2;
-				//show_buf("初始IV", iv2.Get(), iv2.size());
-				my_aes_decrypt((unsigned char*)passwd.c_str(), passwd.size(), out, plaintext2, iv2);
-
-				thelog << plaintext.size() << " " << out.size() << " " << plaintext2.size() << ENDI;
-				printf("plantext2: \n");
-				for (int i = 0; i < (int)plaintext2.size(); i++)
-				{
-					printf("%.2x ", plaintext2[i]);
-					if ((i + 1) % 32 == 0)
-					{
-						printf("\n");
-					}
-				}
-				printf("\n");
-			}
-
 			if (true)
 			{
 				try
@@ -458,8 +311,23 @@ namespace ns_my_std
 					{
 						thelog << "匹配失败" << ende;
 					}
-					//out2.lockBuffer();
-					//out2.setSize(10240);
+					string plain_str = "abcdefg";
+					string passwd_str = "123";
+					string x;
+					string y;
+					thelog << plain_str << endi;
+					protect_encode(passwd_str, plain_str, x);
+					thelog << x << endi;
+					protect_decode(passwd_str, x, y);
+					thelog << y << endi;
+					if (y == plain_str)
+					{
+						thelog << "匹配成功" << endi;
+					}
+					else
+					{
+						thelog << "匹配失败" << ende;
+					}
 				}
 				catch (...)
 				{

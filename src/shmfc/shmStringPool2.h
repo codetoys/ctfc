@@ -86,7 +86,7 @@ namespace ns_my_std
 			{
 				sprintf(buf,"POOL name=%s capacity=%ld,size=%ld(%.2f%%)",m_StringPoolBuffer.GetName(),m_StringPoolBuffer.Capacity(),m_StringPoolBuffer.Size(),100.*m_StringPoolBuffer.Size()/m_StringPoolBuffer.Capacity());
 				theLog<<buf<<endl;
-				sprintf(buf,"INDEX name=%s capacity=%ld,size=%ld(%.2f%%)",m_StringPoolIndex.GetName(),m_StringPoolIndex.capacity(),m_StringPoolIndex.size(),100.*m_StringPoolIndex.size()/m_StringPoolIndex.capacity());
+				sprintf(buf,"INDEX name=%s capacity=%ld,size=%ld(%.2f%%)",m_StringPoolIndex.GetName(),(long)(m_StringPoolIndex.capacity()),(long)(m_StringPoolIndex.size()),100.*m_StringPoolIndex.size()/m_StringPoolIndex.capacity());
 				theLog<<buf<<endl<<endl;
 				long count=0;
 				for(it=m_StringPoolIndex.begin();count<10 && it!=m_StringPoolIndex.end();++it,++count)

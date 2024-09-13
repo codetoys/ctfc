@@ -423,7 +423,7 @@ int test_BinaryPool(int argc, char** argv)
 	thelog << "-------------------------------" << endi;
 	v.push_back('a');
 	thelog << "-------------------------------" << endi;
-	v.push_back(0x0123456789abcdef);
+	v.push_back(0x01234567);
 	thelog << "-------------------------------" << endi;
 	thelog << v[0] << endi;
 	thelog << "-------------------------------" << endi;

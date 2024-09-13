@@ -1313,7 +1313,7 @@ namespace ns_my_std
 			char buf[2048];
 			string tmp;
 			str += "\n此结构为SET，使用率见下面信息（而不是后面的T_ARRAY信息）";
-			sprintf(buf, "\nSET信息：%p head %ld,size %ld(%.2f%%),free_head %ld,begin %ld,sizeof(T) %ld", tree_head, tree_head->hHead, tree_head->size, 100.*tree_head->size / m_array.Capacity(), tree_head->free_head, begin().handle, sizeof(T_DATA));
+			sprintf(buf, "\nSET信息：%p head %ld,size %ld(%.2f%%),free_head %ld,begin %ld,sizeof(T) %ld", tree_head, (long)(tree_head->hHead), (long)(tree_head->size), 100.*tree_head->size / m_array.Capacity(), (long)(tree_head->free_head), (long)(begin().handle), (long)sizeof(T_DATA));
 			str += buf;
 			sprintf(buf, "\nUSER_HEAD信息：%s", tree_head->user_head.toString(tmp).c_str());
 			str += buf;
