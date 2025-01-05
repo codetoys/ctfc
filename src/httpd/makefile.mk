@@ -1,7 +1,7 @@
 #基础对象
 OBJS_BASE= myhttpd.o myhttpserver_admin_page.o myThread.o
 
-TARGET_NAME=libmyhttpd.a
+TARGET_NAME=myhttpd
 TARGET_OBJS=$(OBJS_BASE)
 
 CONFIG_DIR=../../platform/

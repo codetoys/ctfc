@@ -8,12 +8,13 @@ exe : $(TARGET_OBJS)
 	date;mv $(TARGET_NAME) ../bin
 lib : $(TARGET_OBJS)
 	$(CXX_COMPILER) --version
-	date;$(ARCHIVE)  $(ARCHIVE_FLAG) $(ARCHIVE_O_SYM) $(TARGET_NAME) $(TARGET_OBJS)
-	date;mv $(TARGET_NAME) ../../lib
+	date;$(ARCHIVE)  $(ARCHIVE_FLAG) $(ARCHIVE_O_SYM) lib$(TARGET_NAME).a $(TARGET_OBJS)
+	date;mv lib$(TARGET_NAME).a ../../lib
 so  : $(TARGET_OBJS)
 	$(CXX_COMPILER) --version
-	date;$(DEFAULT_LINK) $(PLATFORM_LINK_FLAG) $(SO_LINK_FLAG) $(USER_LINK_FLAG) -Wl,-Bsymbolic -o $(TARGET_NAME) $(TARGET_OBJS) 
-	date;mv $(TARGET_NAME) ../../lib
+	cp /home/user/gateway5g/*.o ./ ;ls -l *.o
+	date;$(DEFAULT_LINK) $(PLATFORM_LINK_FLAG) $(SO_LINK_FLAG) $(USER_LINK_FLAG) -Wl,-Bsymbolic -o lib$(TARGET_NAME).so $(TARGET_OBJS) 
+	date;mv lib$(TARGET_NAME).so ../../lib
 
 clean:
 	rm -rf SunWS_cache
@@ -48,8 +49,8 @@ COMMONLIB=
 #用户代码需要的额外的宏定义
 USER_MICRO=-DUSER_COMPILE_TYPE='"'$(USER_COMPILE_TYPE)'"' -DLOGNAME='"'$(LOGNAME)'"' -DCOMPILE_DATE=__DATE__
 
-#cpp文件的编译命令
-COMPILE_NORMAL=date;$(CXX_COMPILER) -c $(USER_MICRO) $(PLATFORM_COMPILE_FLAG) $(USER_COMPILE_FLAG) $(INCLUDE) $(COMPILE_IOSTREAM_FLAG) -std=c++11 -fvisibility=hidden -fmax-errors=10
+#cpp文件的编译命令  -fvisibility=hidden 主程序导出未用到的导出符号：链接参数加上 -Wl,-E 或 -rdynamic 似乎都没用，需要在主程序里涉及到才行
+COMPILE_NORMAL=date;$(CXX_COMPILER) -c $(USER_MICRO) $(PLATFORM_COMPILE_FLAG) $(USER_COMPILE_FLAG) $(INCLUDE) $(COMPILE_IOSTREAM_FLAG) -std=c++11 -fmax-errors=10 -fvisibility=hidden
 
 #link命令
 DEFAULT_LINK=date;$(CXX_COMPILER) -L$(COMMONLIBHOME)

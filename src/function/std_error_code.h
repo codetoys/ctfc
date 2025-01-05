@@ -16,9 +16,6 @@ CTest_Serialize 复杂的容器
 
 #pragma once
 
-#include <string>
-#include <map>
-
 namespace ns_my_std_interface2
 {
 	using namespace std;

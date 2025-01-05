@@ -1276,7 +1276,11 @@ namespace ns_my_std
 			size_t outputlen(string const & s)
 			{
 				//cout << s << " " << s.size() << " " << strlen(s.c_str()) << " outputlen " << utf8outputlen(s.c_str()) << endl;
+#ifdef _WINDOWS
+				return s.size();//windows的输出库使用本地字符集（与源代码文件的字符集和VS设置的字符集无关）
+#else
 				return utf8outputlen(s.c_str());
+#endif
 			}
 			//utf-8中文通常为3个字节，输出仍为两个字符宽度
 			size_t utf8outputlen(char const * s)

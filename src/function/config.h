@@ -47,6 +47,13 @@
 #define ostrstream ostringstream
 #endif
 
+//默认不导出符号时用这个导出特定的符号
+#ifdef _LINUXOS
+#define DLL_PUBLIC __attribute__ ((visibility("default")))
+#else
+#define DLL_PUBLIC
+#endif
+
 //引入错误码定义文件
 #include "std_error_code.h"
 

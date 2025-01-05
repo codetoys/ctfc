@@ -19,3 +19,4 @@ PLATFORM_LINK_FLAG += -L/home/user/libmodbus_install/lib/
 PLATFORM_LINK_FLAG += -L/home/user/zlib_install/lib/
 PLATFORM_LINK_FLAG += -L/home/user/arm64/snap7-full-1.4.2/build/bin/x86_64-linux/
 PLATFORM_LINK_FLAG += -L/home/user/arm64/open62541-1.3.5/build/bin/
+PLATFORM_LINK_FLAG += -L/home/user/arm64/GmSSL_install/usr/local/lib/

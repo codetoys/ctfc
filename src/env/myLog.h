@@ -32,7 +32,7 @@ namespace ns_my_std
 	//////////////////////////////////////////////////
 	//日志
 
-	struct LogEnd
+	struct DLL_PUBLIC LogEnd
 	{
 		enum { fENDE = 1, fENDW, fENDI, fENDF, fENDD };
 		char end;
@@ -45,7 +45,7 @@ namespace ns_my_std
 	LogEnd const endf(0, LogEnd::fENDF); // fatal
 	LogEnd const endd(0, LogEnd::fENDD); // debug
 
-	class Log
+	class DLL_PUBLIC Log
 	{
 	private:
 		//线程数据

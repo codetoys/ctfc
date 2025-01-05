@@ -7,3 +7,4 @@ SO_LINK_FLAG=-shared
 
 PLATFORM_LINK_FLAG += -L/home/user/arm32/libmodbus_rtu_over_tcp_install/lib/
 PLATFORM_LINK_FLAG += -L/home/user/arm32/mosquitto_install/usr/local/lib/
+PLATFORM_LINK_FLAG += -L/home/user/arm32/GmSSL/build/bin/

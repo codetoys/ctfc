@@ -162,6 +162,9 @@
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="src\makeall.sh" />
+    <None Include="src\othertest\makefile.mk" />
+    <None Include="src\othertest\rebuild.sh" />
+    <None Include="src\othertest\run.sh" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CodeTemplate\CodeTemplate.h" />
@@ -208,6 +211,7 @@
     <ClInclude Include="src\httpd\mysocketserver.h" />
     <ClInclude Include="src\httpd\myThread.h" />
     <ClInclude Include="src\httpd\myUserManager.h" />
+    <ClInclude Include="src\othertest\othertest.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\CodeTemplate\CodeTemplate_t.cpp" />
@@ -218,6 +222,7 @@
     <ClCompile Include="src\httpd\myhttpd_t.cpp" />
     <ClCompile Include="src\httpd\myhttpserver_admin_page.cpp" />
     <ClCompile Include="src\httpd\myThread.cpp" />
+    <ClCompile Include="src\othertest\othertest_t.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="src\httpd\wwwroot\page\mb_menu.xml" />

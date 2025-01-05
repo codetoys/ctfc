@@ -996,7 +996,7 @@ namespace ns_my_std
 	string to_db_style(string const & struct_style);
 
 	//按秒睡眠
-	void SleepSeconds(long seconds);
+	DLL_PUBLIC void SleepSeconds(long seconds);
 	//按微秒睡眠
 	void SleepUSeconds(unsigned long useconds);
 

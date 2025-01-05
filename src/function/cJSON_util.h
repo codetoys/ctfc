@@ -142,7 +142,8 @@ namespace ns_my_std
 	{
 	public:
 		string name;//名称
-		IConfigItem(char const* _name) :name(_name) {}
+		bool bSafe;//涉及到安全的，不显示
+		IConfigItem(char const* _name, bool _bSafe) :name(_name), bSafe(_bSafe) {}
 		virtual bool LoadConfigItem(cJSON*) = 0;
 		virtual bool SaveConfigItem(cJSON*) = 0;
 		virtual string& ToString(string& ret) = 0;
@@ -150,7 +151,7 @@ namespace ns_my_std
 	struct ConfigItem_long : public IConfigItem
 	{
 		long* pValue;//指向存储位置
-		ConfigItem_long(char const* _name, long* _pValue) :IConfigItem(_name), pValue(_pValue) {}
+		ConfigItem_long(char const* _name, long* _pValue) :IConfigItem(_name, false), pValue(_pValue) {}
 		virtual bool LoadConfigItem(cJSON* cjson_data)override
 		{
 			return CJsonUtil::_GetJsonParam(cjson_data, name.c_str(), *pValue);
@@ -169,7 +170,7 @@ namespace ns_my_std
 	struct ConfigItem_bool : public IConfigItem
 	{
 		bool* pValue;//指向存储位置
-		ConfigItem_bool(char const* _name, bool* _pValue) :IConfigItem(_name), pValue(_pValue) {}
+		ConfigItem_bool(char const* _name, bool* _pValue) :IConfigItem(_name, false), pValue(_pValue) {}
 		virtual bool LoadConfigItem(cJSON* cjson_data)override
 		{
 			return CJsonUtil::_GetJsonParam(cjson_data, name.c_str(), *pValue);
@@ -188,7 +189,8 @@ namespace ns_my_std
 	struct ConfigItem_string : public IConfigItem
 	{
 		string* pValue;//指向存储位置
-		ConfigItem_string(char const* _name, string* _pValue) :IConfigItem(_name), pValue(_pValue) {}
+		ConfigItem_string(char const* _name, string* _pValue) :IConfigItem(_name, false), pValue(_pValue) {}
+		ConfigItem_string(char const* _name, string* _pValue, bool _bSafe) :IConfigItem(_name, _bSafe), pValue(_pValue) {}
 		virtual bool LoadConfigItem(cJSON* cjson_data)override
 		{
 			return CJsonUtil::_GetJsonParam(cjson_data, name.c_str(), *pValue);
@@ -199,7 +201,8 @@ namespace ns_my_std
 		}
 		virtual string& ToString(string& ret)override
 		{
-			return ret = *pValue;
+			if (bSafe)return ret.assign(8, '*');
+			else return ret = *pValue;
 		}
 	};
 }

@@ -86,8 +86,8 @@ namespace ns_my_std
 				{
 					unsigned char tmpin[SM4_BLOCK_SIZE];
 					memcpy(tmpin, in + i, SM4_BLOCK_SIZE);
-					IV::XOR(ivec, tmpin); thelog << endi;
-					sm4_encrypt(key, tmpin, out + i); thelog << endi;
+					IV::XOR(ivec, tmpin);
+					sm4_encrypt(key, tmpin, out + i);
 					memcpy(ivec, out + i, SM4_BLOCK_SIZE);
 				}
 				else
@@ -107,7 +107,7 @@ namespace ns_my_std
 			unsigned char userkey[SM4_KEY_SIZE];
 			memset((void*)userkey, '\0', SM4_KEY_SIZE);
 			memcpy(userkey, userpasswd, (userpasswd_len > SM4_KEY_SIZE ? SM4_KEY_SIZE : userpasswd_len));
-			show_buf("key ", userkey, SM4_KEY_SIZE);
+			//show_buf("key ", userkey, SM4_KEY_SIZE);
 
 			SM4_KEY key;
 			sm4_set_encrypt_key(&key, userkey);

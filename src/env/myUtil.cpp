@@ -15,7 +15,7 @@
 
 namespace ns_my_std
 {
-	CActiveAppEnv * g_pActiveAppEnv = NULL;
+	DLL_PUBLIC CActiveAppEnv * g_pActiveAppEnv = NULL;
 
 	stringstream & G_ERROR_MESSAGE()
 	{

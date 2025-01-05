@@ -1,7 +1,7 @@
 #基础对象
 OBJS_BASE= shmEnv.o
 
-TARGET_NAME=libshmfc.a
+TARGET_NAME=shmfc
 TARGET_OBJS=$(OBJS_BASE)
 
 CONFIG_DIR=../../platform/
