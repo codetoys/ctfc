@@ -47,6 +47,9 @@
     <None Include="src\othertest\makefile.mk" />
     <None Include="src\othertest\rebuild.sh" />
     <None Include="src\othertest\run.sh" />
+    <None Include="src\ctScript\makefile.mk" />
+    <None Include="src\ctScript\rebuild.sh" />
+    <None Include="src\ctScript\run.sh" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\env\CommandSet.h">
@@ -184,6 +187,21 @@
     <ClInclude Include="src\othertest\othertest.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="src\ctScript\CTScript2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ctScript\CTScriptFun2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ctScript\ctScripttest.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ctScript\ctScriptTestCase2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ctScript\ICTScript2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\env\env_t.cpp">
@@ -211,6 +229,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\othertest\othertest_t.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ctScript\ctScripttest_t.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

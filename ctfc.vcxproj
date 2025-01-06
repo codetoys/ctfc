@@ -144,6 +144,9 @@
     <None Include="src\CodeTemplate\rebuild.sh" />
     <None Include="src\CodeTemplate\run.sh" />
     <None Include="src\CodeTemplate\simplesample.ct" />
+    <None Include="src\ctScript\makefile.mk" />
+    <None Include="src\ctScript\rebuild.sh" />
+    <None Include="src\ctScript\run.sh" />
     <None Include="src\env\makefile.mk" />
     <None Include="src\env\rebuild.sh" />
     <None Include="src\env\run.sh" />
@@ -168,6 +171,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CodeTemplate\CodeTemplate.h" />
+    <ClInclude Include="src\ctScript\CTScript2.h" />
+    <ClInclude Include="src\ctScript\CTScriptFun2.h" />
+    <ClInclude Include="src\ctScript\ctScripttest.h" />
+    <ClInclude Include="src\ctScript\ctScriptTestCase2.h" />
+    <ClInclude Include="src\ctScript\ICTScript2.h" />
     <ClInclude Include="src\env\CommandSet.h" />
     <ClInclude Include="src\env\env.h" />
     <ClInclude Include="src\env\myLog.h" />
@@ -215,6 +223,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\CodeTemplate\CodeTemplate_t.cpp" />
+    <ClCompile Include="src\ctScript\ctScripttest_t.cpp" />
     <ClCompile Include="src\env\env_t.cpp" />
     <ClCompile Include="src\env\myLog.cpp" />
     <ClCompile Include="src\env\myUtil.cpp" />
