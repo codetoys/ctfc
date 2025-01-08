@@ -1,4 +1,4 @@
-//CTScriptTestCase2.h 脚本解释器测试用例
+﻿//CTScriptTestCase2.h 脚本解释器测试用例
 //
 // Copyright (c) ct  All rights reserved.
 // 版权所有 ct 保留所有权利

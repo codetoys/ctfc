@@ -32,3 +32,8 @@
 *.app
 /.vs
 /ctfc.vcxproj.user
+/脚本编译器/.vs
+/脚本编译器/Debug
+/脚本编译器/Release
+/脚本编译器/脚本编译器.vcxproj.user
+/脚本编译器/*.aps

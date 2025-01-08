@@ -180,6 +180,7 @@
     <ClInclude Include="src\env\env.h" />
     <ClInclude Include="src\env\myLog.h" />
     <ClInclude Include="src\env\myUtil.h" />
+    <ClInclude Include="src\env\stdafx.h" />
     <ClInclude Include="src\function\Archive.h" />
     <ClInclude Include="src\function\BitSet.h" />
     <ClInclude Include="src\function\Buffer.h" />

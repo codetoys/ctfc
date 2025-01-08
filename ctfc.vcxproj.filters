@@ -202,6 +202,9 @@
     <ClInclude Include="src\ctScript\ICTScript2.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="src\env\stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\env\env_t.cpp">

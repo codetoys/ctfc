@@ -1,4 +1,4 @@
-//ICTScript2.h 脚本解释器接口头文件
+﻿//ICTScript2.h 脚本解释器接口头文件
 //
 // Copyright (c) ct  All rights reserved.
 // 版权所有 ct 保留所有权利
