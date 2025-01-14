@@ -76,6 +76,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(OtherSys)\openssl-1.1.1k\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -90,6 +91,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(OtherSys)\openssl-1.1.1k\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -104,6 +106,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(OtherSys)\openssl-1.1.1k\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -118,6 +121,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(OtherSys)\openssl-1.1.1k\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,6 +144,12 @@
     <None Include="platform\_foreach.sh" />
     <None Include="platform\_makecpp.sh" />
     <None Include="platform\_make_dir_list.sh" />
+    <None Include="src\CCTModel_UniversalDB\makefile.mk" />
+    <None Include="src\CCTModel_UniversalDB\rebuild.sh" />
+    <None Include="src\CCTModel_UniversalDB\run.sh" />
+    <None Include="src\CCTModel_UniversalDB\_t_UniversalDB.h.ct" />
+    <None Include="src\CCTModel_UniversalDB\_t_UniversalDB_sequence.h.ct" />
+    <None Include="src\CCTModel_UniversalDB\_t_UniversalDB_table.h.ct" />
     <None Include="src\CodeTemplate\makefile.mk" />
     <None Include="src\CodeTemplate\rebuild.sh" />
     <None Include="src\CodeTemplate\run.sh" />
@@ -168,8 +178,12 @@
     <None Include="src\othertest\makefile.mk" />
     <None Include="src\othertest\rebuild.sh" />
     <None Include="src\othertest\run.sh" />
+    <None Include="src\shmfc\makefile.mk" />
+    <None Include="src\shmfc\rebuild.sh" />
+    <None Include="src\shmfc\run.sh" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\CCTModel_UniversalDB\CCTModel_UniversalDB.h" />
     <ClInclude Include="src\CodeTemplate\CodeTemplate.h" />
     <ClInclude Include="src\ctScript\CTScript2.h" />
     <ClInclude Include="src\ctScript\CTScriptFun2.h" />
@@ -185,6 +199,7 @@
     <ClInclude Include="src\function\BitSet.h" />
     <ClInclude Include="src\function\Buffer.h" />
     <ClInclude Include="src\function\CharSetConv.h" />
+    <ClInclude Include="src\function\cJSON_util.h" />
     <ClInclude Include="src\function\ColumnData.h" />
     <ClInclude Include="src\function\config.h" />
     <ClInclude Include="src\function\CSV.h" />
@@ -193,15 +208,22 @@
     <ClInclude Include="src\function\htmldoc.h" />
     <ClInclude Include="src\function\IDataSource.h" />
     <ClInclude Include="src\function\JSTemplate.h" />
+    <ClInclude Include="src\function\LockedList.h" />
     <ClInclude Include="src\function\meta.h" />
     <ClInclude Include="src\function\mimetype.h" />
     <ClInclude Include="src\function\mydir.h" />
     <ClInclude Include="src\function\myexception.h" />
+    <ClInclude Include="src\function\myGmSSL.h" />
+    <ClInclude Include="src\function\myGmSSL_aes.h" />
+    <ClInclude Include="src\function\myGmSSL_sm3.h" />
+    <ClInclude Include="src\function\myGmSSL_sm4.h" />
+    <ClInclude Include="src\function\myGmSSL_tls.h" />
     <ClInclude Include="src\function\mymutex.h" />
     <ClInclude Include="src\function\mymutex1.h" />
     <ClInclude Include="src\function\mymutex2.h" />
     <ClInclude Include="src\function\mymutex3.h" />
     <ClInclude Include="src\function\myNestedTable.h" />
+    <ClInclude Include="src\function\myOpenSSL.h" />
     <ClInclude Include="src\function\myprocess.h" />
     <ClInclude Include="src\function\myProcPseudo.h" />
     <ClInclude Include="src\function\myshm.h" />
@@ -209,6 +231,8 @@
     <ClInclude Include="src\function\myZIP.h" />
     <ClInclude Include="src\function\sstring.h" />
     <ClInclude Include="src\function\std_error_code.h" />
+    <ClInclude Include="src\function\uuid.h" />
+    <ClInclude Include="src\function\WorkThread.h" />
     <ClInclude Include="src\httpd\mycgi.h" />
     <ClInclude Include="src\httpd\myhttpbase.h" />
     <ClInclude Include="src\httpd\myhttpclient.h" />
@@ -221,18 +245,51 @@
     <ClInclude Include="src\httpd\myThread.h" />
     <ClInclude Include="src\httpd\myUserManager.h" />
     <ClInclude Include="src\othertest\othertest.h" />
+    <ClInclude Include="src\shmfc\IActiveObject_Outside.h" />
+    <ClInclude Include="src\shmfc\myMultiProcess.h" />
+    <ClInclude Include="src\shmfc\myMultiProcessServer.h" />
+    <ClInclude Include="src\shmfc\myMultiProcessServerGroup.h" />
+    <ClInclude Include="src\shmfc\semmgr.h" />
+    <ClInclude Include="src\shmfc\shmArray.h" />
+    <ClInclude Include="src\shmfc\shmBinaryPool.h" />
+    <ClInclude Include="src\shmfc\shmEnv.h" />
+    <ClInclude Include="src\shmfc\shmenvmgr.h" />
+    <ClInclude Include="src\shmfc\shmfctest.h" />
+    <ClInclude Include="src\shmfc\shmfctest2.h" />
+    <ClInclude Include="src\shmfc\shmHash.h" />
+    <ClInclude Include="src\shmfc\shmIActiveObject.h" />
+    <ClInclude Include="src\shmfc\shmListSet.h" />
+    <ClInclude Include="src\shmfc\shmListSetGroup.h" />
+    <ClInclude Include="src\shmfc\shmLRU.h" />
+    <ClInclude Include="src\shmfc\shmMap_NoMutex.h" />
+    <ClInclude Include="src\shmfc\shmMultiList.h" />
+    <ClInclude Include="src\shmfc\shmMultiListTree.h" />
+    <ClInclude Include="src\shmfc\shmSet.h" />
+    <ClInclude Include="src\shmfc\shmSet_Array.h" />
+    <ClInclude Include="src\shmfc\shmSet_Mutex.h" />
+    <ClInclude Include="src\shmfc\shmSet_NoMutex.h" />
+    <ClInclude Include="src\shmfc\shmstd.h" />
+    <ClInclude Include="src\shmfc\shmStringPool.h" />
+    <ClInclude Include="src\shmfc\shmStringPool2.h" />
+    <ClInclude Include="src\shmfc\shmtools.h" />
+    <ClInclude Include="src\shmfc\shmUniversalData.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\CCTModel_UniversalDB\CCTModel_UniversalDB_t.cpp" />
     <ClCompile Include="src\CodeTemplate\CodeTemplate_t.cpp" />
     <ClCompile Include="src\ctScript\ctScripttest_t.cpp" />
     <ClCompile Include="src\env\env_t.cpp" />
+    <ClCompile Include="src\env\env_test.cpp" />
     <ClCompile Include="src\env\myLog.cpp" />
     <ClCompile Include="src\env\myUtil.cpp" />
     <ClCompile Include="src\httpd\myhttpd.cpp" />
     <ClCompile Include="src\httpd\myhttpd_t.cpp" />
     <ClCompile Include="src\httpd\myhttpserver_admin_page.cpp" />
+    <ClCompile Include="src\httpd\mySSLTLS.cpp" />
     <ClCompile Include="src\httpd\myThread.cpp" />
     <ClCompile Include="src\othertest\othertest_t.cpp" />
+    <ClCompile Include="src\shmfc\shmEnv.cpp" />
+    <ClCompile Include="src\shmfc\shmfc_t.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="src\httpd\wwwroot\page\mb_menu.xml" />

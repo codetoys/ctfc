@@ -18,6 +18,10 @@
 #include "winsock.h"
 #endif
 
+#include<string>
+#include<iostream>
+using namespace std;
+
 //在Unix系统下，如果send或recv在等待协议收发数据时网络断开的话，调用进程会接收到一个SIGPIPE信号，进程对该信号的默认处理是进程终止。
 
 namespace ns_my_std

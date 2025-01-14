@@ -50,6 +50,15 @@
     <None Include="src\ctScript\makefile.mk" />
     <None Include="src\ctScript\rebuild.sh" />
     <None Include="src\ctScript\run.sh" />
+    <None Include="src\CCTModel_UniversalDB\_t_UniversalDB.h.ct" />
+    <None Include="src\CCTModel_UniversalDB\_t_UniversalDB_sequence.h.ct" />
+    <None Include="src\CCTModel_UniversalDB\_t_UniversalDB_table.h.ct" />
+    <None Include="src\CCTModel_UniversalDB\makefile.mk" />
+    <None Include="src\CCTModel_UniversalDB\rebuild.sh" />
+    <None Include="src\CCTModel_UniversalDB\run.sh" />
+    <None Include="src\shmfc\makefile.mk" />
+    <None Include="src\shmfc\rebuild.sh" />
+    <None Include="src\shmfc\run.sh" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\env\CommandSet.h">
@@ -205,6 +214,123 @@
     <ClInclude Include="src\env\stdafx.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="src\function\cJSON_util.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\LockedList.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\myGmSSL.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\myGmSSL_aes.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\myGmSSL_sm3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\myGmSSL_sm4.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\myGmSSL_tls.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\myOpenSSL.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\uuid.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\function\WorkThread.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CCTModel_UniversalDB\CCTModel_UniversalDB.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\IActiveObject_Outside.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\myMultiProcess.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\myMultiProcessServer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\myMultiProcessServerGroup.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\semmgr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmArray.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmBinaryPool.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmEnv.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmenvmgr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmfctest.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmfctest2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmHash.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmIActiveObject.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmListSet.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmListSetGroup.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmLRU.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmMap_NoMutex.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmMultiList.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmMultiListTree.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmSet.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmSet_Array.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmSet_Mutex.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmSet_NoMutex.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmstd.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmStringPool.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmStringPool2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmtools.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shmfc\shmUniversalData.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\env\env_t.cpp">
@@ -235,6 +361,21 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\ctScript\ctScripttest_t.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\env\env_test.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CCTModel_UniversalDB\CCTModel_UniversalDB_t.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shmfc\shmEnv.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shmfc\shmfc_t.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\httpd\mySSLTLS.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
