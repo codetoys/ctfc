@@ -22,6 +22,7 @@ clean:
 
 #默认编译参数，可在平台配置中修改
 CXX_COMPILER=CC
+C_COMPILER=gcc
 ARCHIVE=ar
 ARCHIVE_FLAG=
 ARCHIVE_O_SYM=-r
@@ -50,7 +51,7 @@ COMMONLIB=
 USER_MICRO=-DUSER_COMPILE_TYPE='"'$(USER_COMPILE_TYPE)'"' -DLOGNAME='"'$(LOGNAME)'"' -DCOMPILE_DATE=__DATE__
 
 #cpp文件的编译命令  -fvisibility=hidden 主程序导出未用到的导出符号：链接参数加上 -Wl,-E 或 -rdynamic 似乎都没用，需要在主程序里涉及到才行
-COMPILE_NORMAL=date;$(CXX_COMPILER) -c $(USER_MICRO) $(PLATFORM_COMPILE_FLAG) $(USER_COMPILE_FLAG) $(INCLUDE) $(COMPILE_IOSTREAM_FLAG) -std=c++11 -fmax-errors=10 -fvisibility=hidden
+COMPILE_NORMAL= -c $(USER_MICRO) $(PLATFORM_COMPILE_FLAG) $(USER_COMPILE_FLAG) $(INCLUDE) $(COMPILE_IOSTREAM_FLAG) -fmax-errors=10 -fvisibility=hidden
 
 #link命令
 DEFAULT_LINK=date;$(CXX_COMPILER) -L$(COMMONLIBHOME)
@@ -65,9 +66,9 @@ include $(CONFIG_DIR)/platform.mk
 .SUFFIXES: .pc .c .o .typ .h .cpp
 
 .cpp.o:
-	 $(COMPILE_NORMAL)  $*.cpp
+	 date;$(CXX_COMPILER) $(COMPILE_NORMAL)  -std=c++11  $*.cpp
 .c.o:
-	 $(COMPILE_NORMAL)  $*.c
+	 date;$(C_COMPILER) $(COMPILE_NORMAL)  $*.c
 
 .pc.o:
 	proc mode=ansi parse=none close_on_commit=NO code=cpp  cpp_suffix=cpp iname=$* include=$(ORACLE_INCLUDE_HOME)

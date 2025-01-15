@@ -275,6 +275,7 @@
     <ClInclude Include="src\shmfc\shmUniversalData.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\apps\s_server.c" />
     <ClCompile Include="src\CCTModel_UniversalDB\CCTModel_UniversalDB_t.cpp" />
     <ClCompile Include="src\CodeTemplate\CodeTemplate_t.cpp" />
     <ClCompile Include="src\ctScript\ctScripttest_t.cpp" />

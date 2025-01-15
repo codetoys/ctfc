@@ -378,6 +378,9 @@
     <ClCompile Include="src\httpd\mySSLTLS.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\apps\s_server.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="src\httpd\wwwroot\page\mb_menu.xml" />
