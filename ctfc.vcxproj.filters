@@ -59,6 +59,9 @@
     <None Include="src\shmfc\makefile.mk" />
     <None Include="src\shmfc\rebuild.sh" />
     <None Include="src\shmfc\run.sh" />
+    <None Include="src\apps\makefile.mk" />
+    <None Include="src\apps\rebuild.sh" />
+    <None Include="src\apps\run.sh" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\env\CommandSet.h">
@@ -331,6 +334,27 @@
     <ClInclude Include="src\shmfc\shmUniversalData.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="src\apps\apps.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\apps\e_os.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\apps\progs.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\apps\s_apps.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\apps\timeouts.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\apps\s_server_t.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\httpd\mySSLTLS.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\env\env_t.cpp">
@@ -379,6 +403,36 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\apps\s_server.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\apps\app_rand.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\apps\apps.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\apps\bf_prefix.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\apps\ca.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\apps\ocsp.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\apps\opt.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\apps\req.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\apps\s_cb.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\apps\s_socket.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\apps\s_server_t.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

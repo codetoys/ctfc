@@ -22,7 +22,7 @@ mkdir bin
 chmod 755 ../*.sh ../platform/*.sh
 
 #定义目标目录列表 function是最顶级只有头文件的目录，不需要编译
-MAKE_DIR_LIST="env httpd CodeTemplate CCTModel_UniversalDB shmfc ctScript"
+MAKE_DIR_LIST="env apps httpd CodeTemplate CCTModel_UniversalDB shmfc ctScript"
 
 #引入函数文件
 . ../platform/_make_dir_list.sh

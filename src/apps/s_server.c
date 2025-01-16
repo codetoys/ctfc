@@ -60,6 +60,7 @@ typedef unsigned int u_int;
 #endif
 #include "internal/sockets.h"
 
+#include "s_server_t.h"
 BIO* bio_in = NULL;
 BIO* bio_out = NULL;
 BIO* bio_err = NULL;
@@ -976,7 +977,7 @@ const OPTIONS s_server_options[] = {
  (o == OPT_SSL3 || o == OPT_TLS1 || o == OPT_TLS1_1 || o == OPT_TLS1_2 \
   || o == OPT_TLS1_3 || o == OPT_DTLS || o == OPT_DTLS1 || o == OPT_DTLS1_2)
 
-int main(int argc, char *argv[])
+int s_server_main(int argc, char *argv[])
 {
     /* Set up some of the environment. */
     default_config_file = "";
@@ -3035,7 +3036,13 @@ static int www_body(int s, int stype, int prot, unsigned char *context)
     }
 
     for (;;) {
-        i = BIO_gets(io, buf, bufsize - 1);
+		if (3 == www)
+		{
+			i = ProcessHTTP(io);
+			if (i > 0) break;
+		}
+		else i = BIO_gets(io, buf, bufsize - 1);
+		BIO_printf(bio_s_out, "www=%d read R BLOCK %d\n", www, i);
         if (i < 0) {            /* error */
             if (!BIO_should_retry(io) && !SSL_waiting_for_async(con)) {
                 if (!s_quiet)

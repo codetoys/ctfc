@@ -3,6 +3,7 @@
 // 版权所有 ct 保留所有权利
 //
 #include "myhttpd.h"
+#include "mySSLTLS.h"
 
 //启动服务，如果带有“-stop”参数则关闭集群
 int start_httpd(vector<CWebCommand* > const& ws, char const* server_name, int argc, char** argv)
@@ -101,10 +102,10 @@ int _main(int argc, char** argv)
 	ws.push_back(&demoasp);
 	return start_httpd(ws, "ct嵌入式WEB服务器", argc, argv);
 }
-int main_SSLTLS();
 int main(int argc, char** argv)
 {
 	if (!InitActiveApp("myhttpd", 1024 * 1024, argc, argv))exit(1);
+	return s_server_main(argc, argv);
 	return main_SSLTLS();
 	thelog << "程序版本：2024.03.07 08:41" << endi;
 	thelog << "pid " << getpid() << endi;
