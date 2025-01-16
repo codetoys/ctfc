@@ -14,4 +14,4 @@ all:$(all)
 myhttpd.exe:
 	$(MAKE) exe TARGET_NAME=$@ TARGET_OBJS="$(OBJS_BASE) myhttpd_t.o "
 
-COMMONLIB+=-lenv -lssl -lcrypto -ls_server
+COMMONLIB+=-lenv -lssl -lcrypto

@@ -105,7 +105,6 @@ int _main(int argc, char** argv)
 int main(int argc, char** argv)
 {
 	if (!InitActiveApp("myhttpd", 1024 * 1024, argc, argv))exit(1);
-	//return s_server_main(argc, argv);
 	return main_SSLTLS();
 	thelog << "程序版本：2024.03.07 08:41" << endi;
 	thelog << "pid " << getpid() << endi;

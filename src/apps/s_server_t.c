@@ -10,6 +10,7 @@ int main(int argc, char** argv)
 	return s_server_main(argc, argv);
 }
 
+//可以在其它项目提供定制的此函数（同时链接 -ls_server），注意必须声明为extern "C"，否则C++程序无法链接（因为C++会改变函数名称）
 int ProcessHTTP(BIO* io)
 {
 	int readcount = 0;
@@ -29,7 +30,7 @@ int ProcessHTTP(BIO* io)
 				printf("%s\n", buf);
 				BIO_puts(io, "HTTP/1.0 200 ok\r\nContent-type: text/plain\r\n\r\n");
 				time_t t1 = time(NULL);
-				BIO_printf(io, "%s request：\r\n%s", ctime(&t1), buf);
+				BIO_printf(io, "%s request:\r\n%s", ctime(&t1), buf);
 				return readcount;
 			}
 		}

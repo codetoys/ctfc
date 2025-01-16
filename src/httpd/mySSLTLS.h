@@ -5,6 +5,4 @@
 
 #pragma once
 
-#include "../apps/s_server_t.h"
-
 int main_SSLTLS();
