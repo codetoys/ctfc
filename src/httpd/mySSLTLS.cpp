@@ -55,7 +55,7 @@ int main_SSLTLS()
 	ctx = SSL_CTX_new(meth);
 	if (ctx == NULL) exit(1);
 
-	int mode = SSL_VERIFY_NONE;/*验证与否 SSL_VERIFY_NONE SSL_VERIFY_PEER */
+	int mode = SSL_VERIFY_PEER;/*验证与否 SSL_VERIFY_NONE SSL_VERIFY_PEER */
 	SSL_CTX_set_verify(ctx, mode, NULL);
 	//if (SSL_VERIFY_PEER == mode)
 	{
