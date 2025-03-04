@@ -100,12 +100,13 @@ int _main(int argc, char** argv)
 	CWebCommand demoasp;
 	vector<CWebCommand* >  ws;
 	ws.push_back(&demoasp);
+
 	return start_httpd(ws, "ct嵌入式WEB服务器", argc, argv);
 }
 int main(int argc, char** argv)
 {
 	if (!InitActiveApp("myhttpd", 1024 * 1024, argc, argv))exit(1);
-	return main_SSLTLS();
+	//return CmySSLTLS::test_SSLTLS();
 	thelog << "程序版本：2024.03.07 08:41" << endi;
 	thelog << "pid " << getpid() << endi;
 	ShowHttpdVersion();

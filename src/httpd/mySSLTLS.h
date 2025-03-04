@@ -45,7 +45,7 @@ openssl req -new -sha256 -key client.key  -out client.csr -subj "/C=CN/ST=SD/L=J
 openssl x509 -req -days 36500 -sha256 -extfile $OPEN_SSL_CONFIG_FILE -extensions v3_req  -CA  ca.cer -CAkey ca.key  -CAserial ca.srl  -CAcreateserial -in client.csr -out client.cer
 openssl x509 -text -noout -in client.cer
 
-#生成用于windows的pfx证书（pem格式无法导入私钥）
+#生成用于windows的pfx证书（pem格式无法导入私钥 注意有些pem里面只有一个证书或key，等价于这里的.key和.cer）
 openssl pkcs12 -export -out client.pfx -inkey client.key -in client.cer
 
 #去掉私钥密码
@@ -58,4 +58,31 @@ openssl rand -writerand /home/user/.rnd
 
 */
 
-int main_SSLTLS();
+#include "openssl/rsa.h"      
+#include "openssl/crypto.h"
+#include "openssl/x509.h"
+#include "openssl/pem.h"
+#include "openssl/ssl.h"
+#include "openssl/err.h"
+
+class CmySSLTLS
+{
+private:
+    SSL_CTX* ctx;
+    
+    int _test_SSLTLS();
+public:
+    //初始化
+    bool Init_SSL_CTX();
+
+    //处理一个连接，以socket为参数
+    SSL* getSSL(int sd);
+    //释放SSL
+    void freeSSL(SSL* ssl);
+
+    //结束
+    void free_SSL_CTX();
+ 
+    //测试
+    static int test_SSLTLS();
+};

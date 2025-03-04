@@ -12,40 +12,20 @@
 
 //#include <winsock2.h>
 #include "../function/mysocket.h"
-#include "openssl/rsa.h"      
-#include "openssl/crypto.h"
-#include "openssl/x509.h"
-#include "openssl/pem.h"
-#include "openssl/ssl.h"
-#include "openssl/err.h"
+#include "../env/myUtil.h"
+using namespace ns_my_std;
 
 /*所有需要的参数信息都在此处以#define的形式提供*/
 #define CERTF   "server.cer" /*服务端的证书(需经CA签名)*/
 #define KEYF   "server.key"  /*服务端的私钥(建议加密存储)*/
 #define CACERT "ca.cer" /*CA 的证书*/
-#define PORT   1111   /*准备绑定的端口*/
+#define PORT   60000   /*准备绑定的端口，注意只是测试程序test_SSLTLS使用*/
 
 #define CHK_ERR(err,s) if ((err)==-1) { perror(s); exit(1); }
 
-int main_SSLTLS()
+bool CmySSLTLS::Init_SSL_CTX()
 {
-	int err;
-	int listen_sd;
-	struct sockaddr_in sa_serv;
-	struct sockaddr_in sa_cli;
-	socklen_t client_len;
-	SSL_CTX* ctx;
-	X509* client_cert;
-	char* str = NULL;
-	char     buf[4096];
 	SSL_METHOD const* meth;
-	//WSADATA wsaData;
-
-	//if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-	//{
-	//    printf("WSAStartup()fail:%d/n", GetLastError());
-	//    return -1;
-	//}
 
 	SSL_library_init();
 	SSL_load_error_strings();            /*为打印调试信息作准备*/
@@ -53,40 +33,113 @@ int main_SSLTLS()
 	meth = SSLv23_server_method();  /*采用什么协议(SSLv2/SSLv3/TLSv1)在此指定*/
 
 	ctx = SSL_CTX_new(meth);
-	if (ctx == NULL) exit(1);
+	if (ctx == NULL)
+	{
+		thelog << "SSL_CTX_new 失败" << ende;
+		return false;
+	}
 
-	int mode = SSL_VERIFY_PEER;/*验证与否 SSL_VERIFY_NONE SSL_VERIFY_PEER */
+	int mode = SSL_VERIFY_NONE;/*验证与否 SSL_VERIFY_NONE SSL_VERIFY_PEER */
 	SSL_CTX_set_verify(ctx, mode, NULL);
-	//if (SSL_VERIFY_PEER == mode)
+	//加载证书
 	{
 		if (1 != SSL_CTX_load_verify_locations(ctx, CACERT, NULL)) /*若验证,则放置CA证书*/
 		{
 			ERR_print_errors_fp(stderr);
-			exit(2);
+			thelog << "SSL_CTX_load_verify_locations 失败" << ende;
+			return false;
 		}
 
 		if (1 != SSL_CTX_use_certificate_file(ctx, CERTF, SSL_FILETYPE_PEM))
 		{
 			ERR_print_errors_fp(stderr);
-			exit(3);
+			thelog << "SSL_CTX_use_certificate_file 失败" << ende;
+			return false;
 		}
 		if (1 != SSL_CTX_use_PrivateKey_file(ctx, KEYF, SSL_FILETYPE_PEM))
 		{
 			ERR_print_errors_fp(stderr);
-			exit(4);
+			thelog << "SSL_CTX_use_PrivateKey_file 失败" << ende;
+			return false;
 		}
 
 		if (1 != SSL_CTX_check_private_key(ctx))
 		{
 			printf("Private key does not match the certificate public key\n");
-			exit(5);
+			thelog << "SSL_CTX_check_private_key 失败" << ende;
+			return false;
 		}
 	}
 
-	SSL_CTX_set_cipher_list(ctx, "RC4-MD5");
+	SSL_CTX_set_cipher_list(ctx, "");//"RC4-MD5"
+	return true;
+}
+
+SSL* CmySSLTLS::getSSL(int sd)
+{
+	int err;
+	SSL* ssl = SSL_new(ctx);
+	if (ssl == NULL) exit(1);
+	SSL_set_fd(ssl, sd);
+	err = SSL_accept(ssl);
+	printf("SSL_accept finished %d\n", err);
+	if ((err) == -1)
+	{
+		ERR_print_errors_fp(stderr);
+		SSL_free(ssl);
+		return NULL;
+	}
+
+	/*打印所有加密算法的信息(可选)*/
+	printf("SSL connection using %s\n", SSL_get_cipher(ssl));
+
+	/*得到服务端的证书并打印些信息(可选) */
+	X509* client_cert;
+	client_cert = SSL_get_peer_certificate(ssl);
+	if (client_cert != NULL)
+	{
+		printf("Client certificate:\n");
+
+		char* str = X509_NAME_oneline(X509_get_subject_name(client_cert), 0, 0);
+		if (str == NULL) exit(1);
+		printf("\t subject: %s\n", str);
+		free(str);
+
+		str = X509_NAME_oneline(X509_get_issuer_name(client_cert), 0, 0);
+		if (str == NULL) exit(1);
+		printf("\t issuer: %s\n", str);
+		free(str);
+
+		X509_free(client_cert);/*如不再需要,需将证书释放 */
+	}
+	else
+		printf("Client does not have certificate.\n");
+	return ssl;
+}
+
+void CmySSLTLS::freeSSL(SSL* ssl)
+{
+	SSL_free(ssl);
+}
+
+void CmySSLTLS::free_SSL_CTX()
+{
+	SSL_CTX_free(ctx);
+}
+
+int CmySSLTLS::_test_SSLTLS()
+{
+	int err;
+	int listen_sd;
+	struct sockaddr_in sa_serv;
+	struct sockaddr_in sa_cli;
+	socklen_t client_len;
+	char     buf[4096];
+
+	if (!Init_SSL_CTX())return __LINE__;
 
 	/*开始正常的TCP socket过程.................................*/
-	printf("Begin TCP socket...\n");
+	thelog << "Begin TCP socket..." << endi;
 
 	listen_sd = socket(AF_INET, SOCK_STREAM, 0);
 	CHK_ERR(listen_sd, "socket");
@@ -106,58 +159,25 @@ int main_SSLTLS()
 	err = listen(listen_sd, 5);
 	CHK_ERR(err, "listen");
 
+	thelog << "访问方式： https://www.test.com:" << PORT << "/" << endi;
 	while (true)
 	{
 		int sd;
-		SSL* ssl;
 		
 		client_len = sizeof(sa_cli);
 		sd = accept(listen_sd, (struct sockaddr*)(void*)&sa_cli, &client_len);
 		CHK_ERR(sd, "accept");
 
-		printf("Connection from %s, port %d\n",
-			inet_ntoa(sa_cli.sin_addr), sa_cli.sin_port);
+		thelog << "Connection from " << inet_ntoa(sa_cli.sin_addr) << ", port " << sa_cli.sin_port << endi;
 
-		/*TCP连接已建立,进行服务端的SSL过程. */
-		printf("Begin server side SSL\n");
-
-		ssl = SSL_new(ctx);
-		if (ssl == NULL) exit(1);
-		//SSL_set_ciphersuites(ssl, "TLS_AES_128_GCM_SHA256");
-		SSL_set_fd(ssl, sd);
-		err = SSL_accept(ssl);
-		printf("SSL_accept finished %d\n", err);
-		if ((err) == -1) { ERR_print_errors_fp(stderr); continue; }
-
-		/*打印所有加密算法的信息(可选)*/
-		printf("SSL connection using %s\n", SSL_get_cipher(ssl));
-
-		/*得到服务端的证书并打印些信息(可选) */
-		client_cert = SSL_get_peer_certificate(ssl);
-		if (client_cert != NULL)
-		{
-			printf("Client certificate:\n");
-
-			str = X509_NAME_oneline(X509_get_subject_name(client_cert), 0, 0);
-			if (str == NULL) exit(1);
-			printf("\t subject: %s\n", str);
-			free(str);
-
-			str = X509_NAME_oneline(X509_get_issuer_name(client_cert), 0, 0);
-			if (str == NULL) exit(1);
-			printf("\t issuer: %s\n", str);
-			free(str);
-
-			X509_free(client_cert);/*如不再需要,需将证书释放 */
-		}
-		else
-			printf("Client does not have certificate.\n");
+		SSL* ssl= getSSL(sd);
+		if (NULL == ssl)continue;
 
 		/* 数据交换开始,用SSL_write,SSL_read代替write,read */
 		err = SSL_read(ssl, buf, sizeof(buf) - 1);
 		if ((err) == -1) { ERR_print_errors_fp(stderr); continue; }
 		buf[err] = '\0';
-		printf("Got %d chars:'%s'\n", err, buf);
+		printf("Got %d chars:\n%s\n", err, buf);
 
 		char outbuf[10240];
 		time_t t1 = time(NULL);
@@ -167,12 +187,18 @@ int main_SSLTLS()
 		if ((err) == -1) { ERR_print_errors_fp(stderr); continue; }
 
 		shutdown(sd, 2);
-		SSL_free(ssl);
+		freeSSL(ssl);
 	}
 
 	/* 收尾工作*/
 	close(listen_sd);
-	SSL_CTX_free(ctx);
+	free_SSL_CTX();
 
 	return 0;
+}
+
+int CmySSLTLS::test_SSLTLS()
+{
+	CmySSLTLS me;
+	return me._test_SSLTLS();
 }

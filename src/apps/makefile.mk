@@ -15,4 +15,4 @@ s_server.exe:
 	$(MAKE) exe TARGET_NAME=$@ TARGET_OBJS="$(OBJS_BASE) s_server_t.o"
 
 COMMONLIB+=-lenv -lssl -lcrypto
-USER_COMPILE_FLAG+=-std=gnu90 -I/home/user/openssl-1.1.1k/include/
+USER_COMPILE_FLAG+=-I/home/user/openssl-1.1.1k/include/

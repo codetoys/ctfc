@@ -18,6 +18,7 @@
 #endif
 #include <dlfcn.h>
 #include <sys/mman.h>
+#include "mySSLTLS.h"
 
 #define LAST_UPDATE "2016-7-12"
 
@@ -734,9 +735,18 @@ namespace ns_my_std
 			return true;
 		}
 	public://ISocketServerProcess
+#ifdef ENABLE_HTTPS //定义ssl的ctx
+		CmySSLTLS ctx;
+#endif
 		//服务开始时调用（主进程）
 		virtual bool OnStartServer()
 		{
+#ifdef ENABLE_HTTPS //初始化ssl的ctx
+			if (!ctx.Init_SSL_CTX())
+			{
+				return false;
+			}
+#endif
 			TYPE_WEB_COMMANDS::iterator it;
 			for (it = m_commands.begin(); it != m_commands.end(); ++it)
 			{
@@ -752,6 +762,9 @@ namespace ns_my_std
 		//服务结束时调用（主进程）
 		virtual bool OnStopServer()
 		{
+#ifdef ENABLE_HTTPS //释放ssl的ctx
+			ctx.free_SSL_CTX();
+#endif
 			if (!CCurrentProcess::MultiProcessMode())
 			{//多线程模式需要在此卸载
 				return OnStopChildSocketProcess();
@@ -810,6 +823,9 @@ namespace ns_my_std
 
 			m_pThisChildData->peer_info=_s.GetPeerInfo();
 
+#ifdef ENABLE_HTTPS //获得SSL
+			m_s.ssl = this->ctx.getSSL(m_s.GetFD());
+#endif
 			//支持HTTP1.1，一个连接处理多个请求
 			while (m_s.IsConnected())
 			{
@@ -1028,6 +1044,10 @@ namespace ns_my_std
 				}
 			}
 
+#ifdef ENABLE_HTTPS //释放SSL
+			this->ctx.freeSSL(m_s.ssl);
+			m_s.ssl = NULL;
+#endif
 			return true;
 		}
 	};

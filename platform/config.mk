@@ -26,6 +26,8 @@ C_COMPILER=gcc
 ARCHIVE=ar
 ARCHIVE_FLAG=
 ARCHIVE_O_SYM=-r
+CXX_STD=-std=c++11
+C_STD=-std=gnu11
 
 #平台通用编译参数
 PLATFORM_COMPILE_FLAG=
@@ -66,9 +68,9 @@ include $(CONFIG_DIR)/platform.mk
 .SUFFIXES: .pc .c .o .typ .h .cpp
 
 .cpp.o:
-	 date;$(CXX_COMPILER) $(COMPILE_NORMAL)  -std=c++11  $*.cpp
+	 date;$(CXX_COMPILER) $(COMPILE_NORMAL) $(CXX_STD) $*.cpp
 .c.o:
-	 date;$(C_COMPILER) $(COMPILE_NORMAL)  $*.c
+	 date;$(C_COMPILER) $(COMPILE_NORMAL) $(C_STD) $*.c
 
 .pc.o:
 	proc mode=ansi parse=none close_on_commit=NO code=cpp  cpp_suffix=cpp iname=$* include=$(ORACLE_INCLUDE_HOME)

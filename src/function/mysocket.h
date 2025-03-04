@@ -18,6 +18,11 @@
 #include "winsock.h"
 #endif
 
+#define ENABLE_HTTPS //如果不需要SSL支持，直接删掉此句以确保整个系统的一致性，如果不一致程序一定会崩溃
+#ifdef ENABLE_HTTPS //头文件包含
+#include "openssl/ssl.h"
+#endif
+
 #include<string>
 #include<iostream>
 using namespace std;
@@ -48,6 +53,9 @@ namespace ns_my_std
 	{
 	public:
 		bool isDebug;//调试输出
+#ifdef ENABLE_HTTPS //定义SSL变量
+		SSL* ssl=NULL;//用于HTTPS，此指针有效时使用ssl发送接收
+#endif
 	private:
 		bool isSTDOUT;//输出到标准输出而不是socket
 		int s;//socket -1表示无效
@@ -113,6 +121,7 @@ namespace ns_my_std
 				getpeername(s, (sockaddr*)(void*)&peersa, &len_sa);
 			}
 		}
+		int GetFD()const { return s; }
 		void SetSTDOUT() { isSTDOUT = true; }//设置为标准输出
 		bool Listen(unsigned short portnum)//在指定端口上监听，如果s为-1会先建立socket然后bind
 		{
@@ -159,7 +168,13 @@ namespace ns_my_std
 			long i = 0;
 			while (i < count)
 			{
-				int n = send(s, buf + i, count - i, 0);
+				int n;
+#ifdef ENABLE_HTTPS //用ssl发送
+				if (ssl)n = SSL_write(ssl, buf + i, count - i);
+				else n = send(s, buf + i, count - i, 0);
+#else
+				n = send(s, buf + i, count - i, 0);
+#endif
 				if (isDebug)cout << "socket " << s << " send " << count - i << " return " << n << endl;
 				if (n != count)
 				{
@@ -177,7 +192,13 @@ namespace ns_my_std
 		bool Recv(char * buf, int buflen, long * pReadCount)//接收数据
 		{
 			if (isSTDOUT)return false;
-			if ((*pReadCount = recv(s, buf, buflen, 0)) < 0)
+#ifdef ENABLE_HTTPS //用ssl接收
+			if (ssl)*pReadCount = SSL_read(ssl, buf, buflen);
+			else *pReadCount = recv(s, buf, buflen, 0);
+#else
+			*pReadCount = recv(s, buf, buflen, 0);
+#endif
+			if (*pReadCount < 0)
 			{
 				if (isDebug)cout << "socket " << s << " recv  return " << *pReadCount << endl;
 				return false;
@@ -432,6 +453,18 @@ namespace ns_my_std
 			sprintf(buf, "%d", ntohs(peersa.sin_port));
 			str += buf;
 			str += "\n";
+#ifdef ENABLE_HTTPS //ssl信息
+			if (ssl)
+			{
+				str += "SSL_get_cipher ";
+				str += SSL_get_cipher(ssl);
+			}
+			else
+			{
+				str += "no ssl";
+			}
+			str += "\n";
+#endif
 			return str;
 		}
 	};
