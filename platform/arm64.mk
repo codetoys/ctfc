@@ -8,6 +8,7 @@ SO_LINK_FLAG=-shared
 INCLUDE += -I/opt/unisoc-initgc/udx710-module+unisoc-initgc-1.0+20201024+userdebug+native/sysroots/aarch64-unisoc-linux/usr/include/c++/7.2.1/
 INCLUDE += -I/opt/unisoc-initgc/udx710-module+unisoc-initgc-1.0+20201024+userdebug+native/sysroots/aarch64-unisoc-linux/usr/include/c++/7.2.1/aarch64-unisoc-linux/
 INCLUDE += -I/opt/unisoc-initgc/udx710-module+unisoc-initgc-1.0+20201024+userdebug+native/sysroots/aarch64-unisoc-linux/usr/include/
+INCLUDE += -I/home/user/openssl_install/include/
 
 PLATFORM_LINK_FLAG += -L/opt/unisoc-initgc/udx710-module+unisoc-initgc-1.0+20201024+userdebug+native/sysroots/aarch64-unisoc-linux/lib/
 PLATFORM_LINK_FLAG += -L/opt/unisoc-initgc/udx710-module+unisoc-initgc-1.0+20201024+userdebug+native/sysroots/aarch64-unisoc-linux/usr/lib/
